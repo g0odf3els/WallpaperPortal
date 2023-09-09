@@ -1,0 +1,19 @@
+﻿@model string
+
+<div class="container flex-row justify-content-center align-items-center">
+    <form class="form" asp-action="Create" method="post">
+        <div asp-validation-summary="All"></div>
+
+        <div class="form-block">
+            <label for="name">New role</label>
+            <input name="name" class="form-control" />
+        </div>
+
+        <div class="form-block">
+            <button class="animated-btn" type="submit">
+                Add
+            </button>
+        </div>
+
+    </form>
+</div>

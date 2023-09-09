@@ -1,0 +1,12 @@
+﻿@model WallpaperPortal.Models.User;
+
+<div class="container">
+    @if (Model.EmailConfirmed)
+    {
+        <h1>Your mail has been successfully verified.</h1>
+    }
+    else
+    {
+        <h1>Check your email and follow the links in the email to complete your registration and be able to upload files.</h1>
+    }
+</div>
