@@ -1,0 +1,25 @@
+﻿@model WallpaperPortal.ViewModels.EditUserViewModel
+@{
+    ViewBag.Title = "User editing";
+}
+<div class="container flex-row justify-content-center align-items-center">
+    <form class="form" asp-action="Edit" asp-controller="Users">
+        <div asp-validation-summary="ModelOnly"></div>
+        <div>
+            <input type="hidden" asp-for="Id" />
+        </div>
+        <div class="form-block">
+            <label asp-for="Email">Email</label>
+            <input type="text" asp-for="Email"/>
+        </div>
+        <div class="form-block">
+            <label asp-for="Username">Username</label>
+            <input type="text" asp-for="Username"/>
+        </div>
+        <div class="form-block">
+            <button class="animated-btn" type="submit">
+                Save
+            </button>
+        </div>
+    </form>
+</div>

@@ -1,0 +1,29 @@
+﻿@using System.Security.Claims;
+
+<head>
+    <link href="~/css/_Header.css" rel="stylesheet" />
+</head>
+<header class="header">
+    <nav class="nav flex-row justify-content-space-between align-items-center">
+        <a class="logo" asp-area="" asp-controller="" asp-action="Index">Dreamscape</a>
+
+        <form class="searchbar-form" asp-controller="File" asp-action="Index" method="get">
+            <input type="text" name="tags" placeholder="Search..." />
+            <button style="border-color: white" class="animated-btn" type="submit">Search</button>
+        </form>
+
+        <div class="nav_auth-container">
+            @if (User.Identity.IsAuthenticated)
+            {
+                <a class="nav_link" asp-controller="File" asp-action="Upload">Upload</a>
+                <a class="nav_link" asp-controller="Users" asp-action="Profile" asp-route-id="@User.FindFirstValue(ClaimTypes.NameIdentifier)">@User.Identity.Name</a>
+                <a class="nav_link" asp-controller="Authorization" asp-action="Logout">Logout</a>
+            }
+            else
+            {
+                <a class="nav_link" asp-controller="Authorization" asp-action="Login">Login</a>
+                <a class="nav_link" asp-controller="Authorization" asp-action="Register">Register</a>
+            }
+        </div>
+    </nav>
+</header>
