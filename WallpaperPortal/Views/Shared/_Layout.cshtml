@@ -1,9 +1,10 @@
-﻿<!DOCTYPE html>
+﻿@using WallpaperPortal.Helpers;
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Dreamscape</title>
+    <title>@ViewData["Title"]</title>
     <link href="~/css/site.css" rel="stylesheet" />
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://code.jquery.com/ui/1.13.0/jquery-ui.js"></script>
@@ -15,6 +16,9 @@
     <main class="container flex-row">
         @RenderBody()
     </main>
-    @await RenderSectionAsync("Scripts", required: false)
 </body>
+@Html.PageScripts()
+@RenderSection("scripts", required: false)
 </html>
+
+

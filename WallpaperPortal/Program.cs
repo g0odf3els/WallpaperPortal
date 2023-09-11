@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System;
 using WallpaperPortal.Models;
 using WallpaperPortal.Persistance;
 using WallpaperPortal.Services;
@@ -60,5 +61,17 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+string filesFolderPath = Path.Combine(app.Environment.WebRootPath, "Uploads/Files");
+if (!Directory.Exists(filesFolderPath))
+{
+    Directory.CreateDirectory(filesFolderPath);
+}
+
+string previewsFolderPath = Path.Combine(app.Environment.WebRootPath, "Uploads/Previews");
+if (!Directory.Exists(previewsFolderPath))
+{
+    Directory.CreateDirectory(previewsFolderPath);
+}
 
 app.Run();

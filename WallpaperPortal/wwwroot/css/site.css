@@ -29,6 +29,15 @@ body {
     flex-direction: column;
 }
 
+.pt-5 {
+    padding: 5px;
+}
+
+.px-10 {
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
 .justify-content-space-between {
     justify-content: space-between;
 }
@@ -39,15 +48,6 @@ body {
 
 .align-items-center {
     align-items: center;
-}
-
-.mt-10 {
-    margin-top: 10px;
-}
-
-.mx-5 {
-    margin-left: 5px;
-    margin-right: 5px;
 }
 
 .animated-btn {
@@ -126,10 +126,6 @@ body {
     width: 100%;
 }
 
-.form button {
-    height: 40px;
-}
-
 .form a {
     text-decoration: none;
     color: #000;
@@ -169,3 +165,120 @@ body {
         background-color: #ddd;
     }
 
+.side-bar {
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+    width: 300px;
+    overflow-y: auto;
+}
+
+@media (max-width: 800px) {
+    .side-bar {
+        width: 100%;
+        height: fit-content;
+        overflow-y: unset;
+    }
+}
+
+    .side-bar::-webkit-scrollbar-track {
+        -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+        background-color: #F5F5F5;
+    }
+
+    .side-bar::-webkit-scrollbar {
+        width: 6px;
+        background-color: #F5F5F5;
+    }
+
+    .side-bar::-webkit-scrollbar-thumb {
+        background-color: #000000;
+    }
+
+#tagList {
+    display: flex;
+    flex-wrap: wrap;
+    list-style: none;
+    gap: 4px;
+}
+
+    #tagList a {
+        text-decoration: none;
+    }
+
+.tag-element {
+    display: flex;
+    position: relative;
+    align-items: center;
+    padding: 5px;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
+    background-color: black;
+    color: white;
+}
+
+.delete-tag-btn {
+    padding-left: 10px;
+    padding-right: 10px;
+    background: black;
+    border: none;
+    color: white;
+    height: 100%;
+    border-radius: 0 5px 5px 0;
+}
+
+.add-tag-form {
+    display: flex;
+    width: 100%;
+}
+
+    .add-tag-form input {
+        width: 100%;
+    }
+
+    .add-tag-form button {
+        margin-left: 4px;
+        width: 70px;
+        font-size: 14px;
+        font-weight: normal display: inline-flex;
+        align-items: center;
+    }
+
+    .tag-div form {
+        display: flex;
+    }
+
+.pagination-container {
+    margin-top: 10px;
+    padding-bottom: 20px;
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pagination-container .pagination {
+    height: 40px;
+    position: relative;
+    background-color: #000;
+    box-shadow: 5px 5px 30px rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+    .pagination-container .pagination li {
+        list-style-type: none;
+        display: inline-block;
+    }
+
+        .pagination-container .pagination li a {
+            position: relative;
+            padding: 15px 15px;
+            text-decoration: none;
+            color: #FFF;
+            font-weight: 500;
+        }
+
+            .pagination-container .pagination li a:hover,
+            .pagination-container .pagination li.active a {
+                background: rgba(255, 255, 255, 0.2);
+            }
