@@ -1,0 +1,149 @@
+﻿﻿@{
+    ViewData["Title"] = "Upload";
+}
+
+<div class="container flex-row justify-content-center align-items-center">
+    <form class="form" asp-action="Upload" asp-controller="File" method="post" enctype="multipart/form-data">
+
+        <div class="form-block">
+            <h2>Choice file to upload</h2>
+        </div>
+
+        <div class="form-block">
+            <div class="form_img">
+                <img id="imagePreview" />
+            </div>
+        </div>
+
+        <div class="form-block">
+            <div id="tagList">
+            </div>
+        </div>
+
+        <div class="form-block">
+            <input class="upload-file" type="file" name="upload" id="fileInput" />
+        </div>
+
+        <div class="form-block">
+            <label for="tags">Enter tag:</label>
+            <input type="text" name="tags" id="tags" />
+        </div>
+
+        <div class="form-block" id="fileDetails">
+        </div>
+
+        <div class="form-block">
+            <button type="button" id="addTagBtn" class="animated-btn">
+                Add Tag
+            </button>
+        </div>
+
+        <div class="form-block">
+            <button class="animated-btn" type="submit" value="Upload">
+                Upload
+            </button>
+        </div>
+
+        <input type="hidden" name="tagsList" id="tagsListInput" />
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        $(function () {
+            var tagsList = [];
+
+            function updateTagList() {
+                $("#tagList").empty();
+
+                tagsList.forEach(function (tag) {
+                    var tagElement = $("<span/>", {
+                        class: "tag-element",
+                        text: tag
+                    });
+
+                    var tagButton = $("<button/>", {
+                        text: "x",
+                        class: "delete-tag-btn",
+                        click: function () {
+                            tagsList = tagsList.filter(function (item) {
+                                return item !== tag;
+                            });
+                            updateTagList();
+                        }
+                    });
+
+                    tagElement.append(tagButton);
+                    $("#tagList").append(tagElement);
+                });
+            }
+
+            $("#addTagBtn").click(function () {
+                var newTag = $("#tags").val().trim();
+
+                if (newTag !== "" && !tagsList.includes(newTag)) {
+                    tagsList.push(newTag);
+                    updateTagList();
+                    $("#tags").val("");
+                    updateTagsListInput();
+                }
+            });
+
+            function updateTagsListInput() {
+                $("#tagsListInput").val(tagsList.join(','));
+            }
+
+            $("#fileInput").on("input", function () {
+                var fileInput = this;
+                var fileDetailsDiv = $("#fileDetails");
+                var imagePreview = $("#imagePreview");
+
+                if (fileInput.files && fileInput.files[0]) {
+                    var file = fileInput.files[0];
+                    var fileName = file.name;
+                    var fileSize = file.size;
+                    var fileType = file.type;
+
+                    fileDetailsDiv.html("<p>Selected File: " + fileName + "</p><p>Size: " + fileSize + " bytes</p><p>Type: " + fileType + "</p>");
+
+                    if (fileType.startsWith("image/")) {
+                        var reader = new FileReader();
+                        reader.onload = function (event) {
+                            imagePreview.attr("src", event.target.result);
+                        };
+                        reader.readAsDataURL(file);
+                        imagePreview.show();
+                    } else {
+                        imagePreview.hide();
+                    }
+                } else {
+                    fileDetailsDiv.empty();
+                    imagePreview.hide();
+                }
+            });
+
+            $("#tags").on("input", function () {
+                var inputTag = $(this).val().trim();
+                if (inputTag !== "") {
+                    $.ajax({
+                        url: "/Tag/Tags",
+                        method: "GET",
+                        data: { prefix: inputTag },
+                        success: function (data) {
+                            var availableTags = data.map(function (tag) {
+                                return tag.name;
+                            });
+
+                            $("#tags").autocomplete({
+                                source: availableTags
+                            });
+                        },
+                        error: function (error) {
+                            console.log(error);
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+}

@@ -15,13 +15,15 @@ namespace WallpaperPortal.Controllers
         private readonly SignInManager<User> _signInManager;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IEmailService _emailService;
+        private readonly ILogger<AuthorizationController> _logger;
 
-        public AuthorizationController(UserManager<User> userManager, SignInManager<User> signInManager, IUnitOfWork unitOfWork, IEmailService emailService)
+        public AuthorizationController(UserManager<User> userManager, SignInManager<User> signInManager, IUnitOfWork unitOfWork, IEmailService emailService, ILogger<AuthorizationController> logger)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _unitOfWork = unitOfWork;
             _emailService = emailService;
+            _logger = logger;
         }
 
         [HttpGet]
@@ -34,35 +36,43 @@ namespace WallpaperPortal.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
-            if (!ModelState.IsValid)
+            try
             {
+                if (!ModelState.IsValid)
+                {
+                    return View(model);
+                }
+
+                var user = new User
+                {
+                    Email = model.Email,
+                    UserName = model.Username,
+                };
+
+                var result = await _userManager.CreateAsync(user, model.Password);
+
+                if (result.Succeeded)
+                {
+                    await _userManager.AddToRoleAsync(user, "user");
+
+                    await _signInManager.SignInAsync(user, false);
+
+                    return RedirectToAction("ConfirmEmail", "Authorization");
+                }
+
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, error.Description);
+                }
+
                 return View(model);
+
             }
-
-            var user = new User
+            catch (Exception ex)
             {
-                Email = model.Email,
-                UserName = model.Username,
-            };
-
-            var result = await _userManager.CreateAsync(user, model.Password);
-
-            if (result.Succeeded)
-            {
-                await _userManager.AddToRoleAsync(user, "user");
-
-                await _signInManager.SignInAsync(user, false);
-
-                return RedirectToAction("ConfirmEmail", "Authorization");
+                _logger.LogError(ex.Message);
+                return BadRequest();
             }
-
-            foreach (var error in result.Errors)
-            {
-                ModelState.AddModelError(string.Empty, error.Description);
-            }
-
-            return View(model);
-
         }
 
         [HttpGet]
@@ -78,90 +88,122 @@ namespace WallpaperPortal.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginViewModel model)
         {
-            if (!ModelState.IsValid)
+            try
             {
+                if (!ModelState.IsValid)
+                {
+                    return View(model);
+                }
+
+                var result = await _signInManager.PasswordSignInAsync(model.Username, model.Password, model.RememberMe, false);
+
+                if (result.Succeeded)
+                {
+                    if (!string.IsNullOrEmpty(model.ReturnUrl) && Url.IsLocalUrl(model.ReturnUrl))
+                    {
+                        return Redirect(model.ReturnUrl);
+                    }
+                    else
+                    {
+                        return RedirectToAction("Index", "Home");
+                    }
+                }
+
+                ModelState.AddModelError("", "Incorrect login and/or password");
+
                 return View(model);
             }
-
-            var result = await _signInManager.PasswordSignInAsync(model.Username, model.Password, model.RememberMe, false);
-
-            if (result.Succeeded)
+            catch (Exception ex)
             {
-                if (!string.IsNullOrEmpty(model.ReturnUrl) && Url.IsLocalUrl(model.ReturnUrl))
-                {
-                    return Redirect(model.ReturnUrl);
-                }
-                else
-                {
-                    return RedirectToAction("Index", "Home");
-                }
+                _logger.LogError(ex.Message);
+                return BadRequest();
             }
-
-            ModelState.AddModelError("", "Incorrect login and/or password");
-
-            return View(model);
         }
 
         [HttpGet]
         public async Task<IActionResult> Logout()
         {
-            await _signInManager.SignOutAsync();
-            return RedirectToAction("Index", "Home");
+            try
+            {
+                await _signInManager.SignOutAsync();
+                return RedirectToAction("Index", "Home");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return BadRequest();
+            }
         }
 
         [HttpGet]
         public async Task<IActionResult> ConfirmEmail()
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var user = _unitOfWork.UserRepository.FindFirstByCondition(user => user.Id == userId);
-
-            if (user is null)
+            try
             {
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var user = _unitOfWork.UserRepository.FindFirstByCondition(user => user.Id == userId);
+
+                if (user is null)
+                {
+                    return BadRequest();
+                }
+
+                if (!user.EmailConfirmed)
+                {
+                    var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                    var callbackUrl = Url.Action(
+                        "EmailCodeConfirmation",
+                        "Authorization",
+                        new
+                        {
+                            userId = user.Id,
+                            code = code,
+                        },
+                        protocol: HttpContext.Request.Scheme);
+
+                    await _emailService.SendEmailAsync(user.Email, "Confirm your account",
+                        $"Confirm registration by following the link: <a href='{callbackUrl}'>link</a>");
+                }
+                return View(user);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
                 return BadRequest();
             }
-
-            if (!user.EmailConfirmed)
-            {
-                var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                var callbackUrl = Url.Action(
-                    "EmailCodeConfirmation",
-                    "Authorization",
-                    new
-                    {
-                        userId = user.Id,
-                        code = code,
-                    },
-                    protocol: HttpContext.Request.Scheme);
-
-                await _emailService.SendEmailAsync(user.Email, "Confirm your account",
-                    $"Confirm registration by following the link: <a href='{callbackUrl}'>link</a>");
-            }
-            return View(user);
         }
 
         [HttpGet]
         [AllowAnonymous]
         public async Task<IActionResult> EmailCodeConfirmation(string userId, string code)
         {
-            if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(code))
+            try
             {
-                return BadRequest();
-            }
+                if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(code))
+                {
+                    return BadRequest();
+                }
 
-            var user = await _userManager.FindByIdAsync(userId);
-            if (user == null)
-            {
-                return BadRequest();
-            }
+                var user = await _userManager.FindByIdAsync(userId);
+                if (user == null)
+                {
+                    return BadRequest();
+                }
 
-            var result = await _userManager.ConfirmEmailAsync(user, code);
-            if (result.Succeeded)
-            {
-                return RedirectToAction("ConfirmEmail", "Authorization");
+                var result = await _userManager.ConfirmEmailAsync(user, code);
+                if (result.Succeeded)
+                {
+                    return RedirectToAction("ConfirmEmail", "Authorization");
+                }
+                else
+                {
+                    return View("Error");
+                }
             }
-            else
+            catch (Exception ex)
             {
-                return View("Error");
+                _logger.LogError(ex.Message);
+                return BadRequest();
             }
         }
 
@@ -175,29 +217,37 @@ namespace WallpaperPortal.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ForgotPassword(ForgotPasswordModel forgotPasswordModel)
         {
-            if (!ModelState.IsValid)
-                return View(forgotPasswordModel);
+            try
+            {
+                if (!ModelState.IsValid)
+                    return View(forgotPasswordModel);
 
-            var user = await _userManager.FindByEmailAsync(forgotPasswordModel.Email);
-            if (user == null)
-                return RedirectToAction(nameof(ForgotPasswordConfirmation));
+                var user = await _userManager.FindByEmailAsync(forgotPasswordModel.Email);
+                if (user == null)
+                    return RedirectToAction(nameof(ForgotPasswordConfirmation));
 
-            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+                var token = await _userManager.GeneratePasswordResetTokenAsync(user);
 
-            var callbackUrl = Url.Action(
-                "ResetPassword",
-                "Authorization",
-                new
-                {
-                    token,
-                    email = user.Email,
-                },
-                protocol: HttpContext.Request.Scheme);
+                var callbackUrl = Url.Action(
+                    "ResetPassword",
+                    "Authorization",
+                    new
+                    {
+                        token,
+                        email = user.Email,
+                    },
+                    protocol: HttpContext.Request.Scheme);
 
-            await _emailService.SendEmailAsync(user.Email, "Reset password",
-                $"Reset password by following the link: <a href='{callbackUrl}'>link</a>");
+                await _emailService.SendEmailAsync(user.Email, "Reset password",
+                    $"Reset password by following the link: <a href='{callbackUrl}'>link</a>");
 
-            return RedirectToAction("ForgotPasswordConfirmation", "Authorization");
+                return RedirectToAction("ForgotPasswordConfirmation", "Authorization");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return BadRequest();
+            }
         }
 
         public IActionResult ForgotPasswordConfirmation()
@@ -216,23 +266,31 @@ namespace WallpaperPortal.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ResetPassword(ResetPasswordModel model)
         {
-            if (!ModelState.IsValid)
-                return View(model);
-
-            var user = await _userManager.FindByEmailAsync(model.Email);
-            if (user == null)
-                RedirectToAction(nameof(ResetPasswordConfirmation));
-            var resetPassResult = await _userManager.ResetPasswordAsync(user, model.Token, model.Password);
-
-            if (!resetPassResult.Succeeded)
+            try
             {
-                foreach (var error in resetPassResult.Errors)
+                if (!ModelState.IsValid)
+                    return View(model);
+
+                var user = await _userManager.FindByEmailAsync(model.Email);
+                if (user == null)
+                    RedirectToAction(nameof(ResetPasswordConfirmation));
+                var resetPassResult = await _userManager.ResetPasswordAsync(user, model.Token, model.Password);
+
+                if (!resetPassResult.Succeeded)
                 {
-                    ModelState.TryAddModelError(string.Empty, error.Description);
+                    foreach (var error in resetPassResult.Errors)
+                    {
+                        ModelState.TryAddModelError(string.Empty, error.Description);
+                    }
+                    return View();
                 }
-                return View();
+                return RedirectToAction(nameof(ResetPasswordConfirmation));
             }
-            return RedirectToAction(nameof(ResetPasswordConfirmation));
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return BadRequest();
+            }
         }
 
         [HttpGet]
