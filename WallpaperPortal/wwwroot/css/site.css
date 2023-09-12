@@ -30,7 +30,11 @@ body {
 }
 
 .pt-5 {
-    padding: 5px;
+    padding-top: 5px;
+}
+
+.pb-5 {
+    padding-bottom: 5px;
 }
 
 .px-10 {
@@ -166,6 +170,7 @@ body {
     }
 
 .side-bar {
+    position: relative;
     box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
     width: 300px;
     overflow-y: auto;

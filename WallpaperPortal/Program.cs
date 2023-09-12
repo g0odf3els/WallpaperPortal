@@ -74,4 +74,10 @@ if (!Directory.Exists(previewsFolderPath))
     Directory.CreateDirectory(previewsFolderPath);
 }
 
+string ProfileImagesPath = Path.Combine(app.Environment.WebRootPath, "Uploads/ProfileImages");
+if (!Directory.Exists(ProfileImagesPath))
+{
+    Directory.CreateDirectory(ProfileImagesPath);
+}
+
 app.Run();

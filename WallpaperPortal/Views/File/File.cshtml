@@ -10,7 +10,10 @@
 
 <div class="file container flex-row">
 
-    <div class="side-bar flex-column">
+    <div class="side-bar">
+
+        @await Html.PartialAsync("_UserCard", Model.User)
+
         <div class="file-info pt-5 px-10">
             <div class="file-resolution mt-10">
                 @Model.Width x @Model.Height
@@ -25,17 +28,23 @@
             </div>
         </div>
 
-
         <form class="pt-5 px-10" method="post" asp-action="Download" asp-controller="File" asp-route-id="@Model.Id" enctype="multipart/form-data">
             <button class="animated-btn" type="submit">
-                Download
+                <div class="flex-row justify-content-space-between align-items-center">
+                    <span>Download</span>
+                    <span class="material-symbols-outlined">download</span>
+                </div>
             </button>
         </form>
+
         @if (@Model.UserId == @User.FindFirstValue(ClaimTypes.NameIdentifier) || @User.IsInRole("Admin"))
         {
             <form class="pt-5 px-10" method="post" asp-action="Delete" asp-controller="File" asp-route-id="@Model.Id" enctype="multipart/form-data">
                 <button class="animated-btn" type="submit">
-                    Delete
+                    <div class="flex-row justify-content-space-between align-items-center">
+                        <span>Delete</span>
+                        <span class="material-symbols-outlined">delete</span>
+                    </div>
                 </button>
             </form>
         }
@@ -45,7 +54,9 @@
             <form class="add-tag-form pt-5 px-10" method="post" asp-action="AddTag" asp-controller="File" asp-route-id="@Model.Id" enctype="multipart/form-data">
                 <input name="tagName" />
                 <button class="animated-btn" type="submit">
-                    Add
+                    <div class="flex-row justify-content-center align-items-center">
+                        <span class="material-symbols-outlined">add_box</span>
+                    </div>
                 </button>
             </form>
         }
@@ -63,15 +74,15 @@
                     {
                         <form method="post" asp-action="RemoveTag" asp-controller="File" asp-route-id="@Model.Id" asp-route-tagName="@tag.Name" enctype="multipart/form-data">
                             <button class="delete-tag-btn" type="submit">
-                                X
+                                <div class="flex-row justify-content-center align-items-center">
+                                    <span class="material-symbols-outlined">close</span>
+                                </div>
                             </button>
                         </form>
                     }
                 </div>
             }
         </div>
-
-
     </div>
 
     <div class="container flex-row justify-content-center align-items-center">
