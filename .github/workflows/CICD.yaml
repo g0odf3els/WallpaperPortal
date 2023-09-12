@@ -45,7 +45,7 @@ jobs:
             docker container stop dreamscape
             docker container prune -f
             docker run -d \
-                       -e ConnectionStrings__DefaultConnection="${{secrets.CONNECTION_STRING}}" \
+                       -e MySQLConnection__ConnectionString="${{secrets.CONNECTION_STRING}}" \
                        -e Smtp__Host="${{secrets.SMTP_HOST}}" \
                        -e Smtp__Port="${{secrets.SMTP_PORT}}" \
                        -e Smtp__Username="${{secrets.SMTP_USERNAME}}" \
