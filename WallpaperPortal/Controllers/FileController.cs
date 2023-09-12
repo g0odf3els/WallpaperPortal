@@ -22,7 +22,7 @@ namespace Dreamscape.Controllers
         }
 
         [HttpGet("Files")]
-        public IActionResult Files([FromQuery] FilesQuery query = null, int page = 1, int pageSize = 4)
+        public IActionResult Files([FromQuery] FilesQuery query = null, int page = 1, int pageSize = 16)
         {
             try
             {
