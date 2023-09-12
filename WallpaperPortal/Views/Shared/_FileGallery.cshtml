@@ -1,0 +1,18 @@
+﻿@model IEnumerable<File>
+
+<head>
+	<link href="~/css/_FileGallery.css" rel="stylesheet" />
+</head>
+<div class="file-gallery">
+	@foreach (var file in Model)
+	{
+		<div class="file-gallery_container">
+			<a asp-action="File" asp-controller="File" asp-route-id="@file.Id">
+				<img class="container file-gallery_img" src="@file.PreviewPath" alt=$"Wallpaper @string.Join(", ", @file.Tags.Select(t => t.Name)) download free">
+			</a>
+			<div class="file-gallery_conainer-overlay">
+				@file.Width x @file.Height
+			</div>
+		</div>
+	}
+</div>

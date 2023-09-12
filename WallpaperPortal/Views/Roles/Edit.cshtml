@@ -1,0 +1,28 @@
+﻿@using Microsoft.AspNetCore.Identity
+@model WallpaperPortal.ViewModels.ChangeRoleViewModel
+
+
+<div class="container flex-row justify-content-center align-items-center">
+    <form class="form" asp-controller="Roles" asp-action="Edit" method="post">
+
+        <h2> @Model.UserEmail roles</h2>
+        <input type="hidden" name="Id" value="@Model.UserId" />
+        <div class="form-block">
+            @foreach (IdentityRole role in Model.AllRoles)
+            {
+                <div class="remember-div">
+                    <input type="checkbox" name="roles" value="@role.Name"
+                    @(Model.UserRoles.Contains(role.Name) ? "checked=\"checked\"" : "") />
+
+                    @role.Name <br />
+                </div>
+            }
+        </div>
+
+        <div class="form-block">
+            <button class="animated-btn" type="submit">
+                Save
+            </button>
+        </div>
+    </form>
+</div>

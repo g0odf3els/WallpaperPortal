@@ -1,0 +1,90 @@
+﻿﻿@using System.Security.Claims;
+@model WallpaperPortal.ViewModels.ProfileViewModel
+@{
+    ViewData["Title"] = Model.User.UserName;
+}
+
+<head>
+    <link href="~/css/Profile.css" rel="stylesheet" />
+</head>
+
+<div class="profile container flex-row">
+
+    <div class="side-bar flex-column">
+        @await Html.PartialAsync("_UserCard", Model.User)
+        @if (@Model.User.Id == @User.FindFirstValue(ClaimTypes.NameIdentifier) || @User.IsInRole("Admin"))
+        {
+            <form method="get" class="px-10 pb-5" asp-action="ChangeProfileImage" asp-controller="Users" enctype="multipart/form-data">
+                <button class="animated-btn" type="submit">
+                    <div class="flex-row justify-content-space-between align-items-center">
+                        <span>Edit</span>
+                        <span class="material-symbols-outlined">settings</span>
+                    </div>
+                </button>
+            </form>
+        }
+    </div>
+
+    <div class="container">
+        @if (Model.UploadedFiles.TotalCount > 0)
+        {
+            @await Html.PartialAsync("_FileGallery", Model.UploadedFiles.Items)
+            <div class="pagination-container">
+                <ul class="pagination">
+                    @if (Model.UploadedFiles.TotalPages > 1)
+                    {
+                        @if (Model.UploadedFiles.PageNumber != 1)
+                        {
+                            <li>
+                                <a asp-action="Profile" asp-controller="Users" asp-route-id="@Model.User.Id" asp-route-page="@(Model.UploadedFiles.PageNumber - 1)">
+                                    <span class="material-symbols-outlined">navigate_before</span>
+                                </a>
+                            </li>
+                        }
+
+                        @for (var i = Math.Max(1, Model.UploadedFiles.PageNumber - 2); i <= Math.Min(Model.UploadedFiles.TotalPages, Model.UploadedFiles.PageNumber + 2); i++)
+                        {
+                            if (i == Model.UploadedFiles.PageNumber)
+                            {
+                                <li class="active">
+                                    <a>
+                                        @i
+                                    </a>
+                                </li>
+                            }
+                            else
+                            {
+                                <li>
+                                    <a asp-action="Profile" asp-controller="Users" asp-route-id="@Model.User.Id" asp-route-page="@i">
+                                        @i
+                                    </a>
+                                </li>
+                            }
+                        }
+
+                        @if (Model.UploadedFiles.PageNumber != Model.UploadedFiles.TotalPages)
+                        {
+                            <li>
+                                <a asp-action="Profile" asp-controller="Users" asp-route-id="@Model.User.Id" asp-route-page="@(Model.UploadedFiles.PageNumber + 1)">
+                                    <span class="material-symbols-outlined">navigate_next</span>
+                                </a>
+                            </li>
+                        }
+                    }
+                </ul>
+            </div>
+        }
+        else
+        {
+            <div class="px-10 pt-5">
+                <h3>The @Model.User.UserName has not uploaded any files yet</h3>
+            </div>
+        }
+        @if (Model.User.Id == @User.FindFirstValue(ClaimTypes.NameIdentifier) && !Model.User.EmailConfirmed)
+        {
+            <div class="px-10 pt-5">
+                Check your email and follow the links in the email to complete your registration and be able to upload files.
+            </div>
+        }
+    </div>
+</div>

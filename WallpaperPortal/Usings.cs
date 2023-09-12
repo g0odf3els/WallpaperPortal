@@ -1,0 +1,1 @@
+﻿global using File = WallpaperPortal.Models.File;

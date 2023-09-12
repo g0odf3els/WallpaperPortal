@@ -15,7 +15,7 @@ namespace WallpaperPortal.Controllers
 
         public IActionResult Index()
         {
-            return View();
+           return RedirectToAction("Files", "File");
         }
 
         public IActionResult Privacy()
