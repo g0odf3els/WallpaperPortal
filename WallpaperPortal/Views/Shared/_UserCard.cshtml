@@ -7,7 +7,15 @@
 
 <div class="user-card flex-column align-items-center">
     <a asp-controller="Users" asp-action="Profile" asp-route-id="@Model.Id">
-        <img class="user-card_img" src="@Model.ProfileImage" />
+        @if(Model.ProfileImage != null)
+        {
+            <img class="user-card_img" src="@Model.ProfileImage  />
+        }
+        else
+        {
+            <img class="user-card_img" src="~/Assets//Images/default-user-image.png" />
+
+        }
     </a>
     <div class="user-card_username pt-5">
         @Model.UserName

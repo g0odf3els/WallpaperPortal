@@ -76,13 +76,13 @@
         }
         else
         {
-            <div class="noUploads">
-                The @Model.User.UserName has not uploaded any files yet
+            <div class="px-10 pt-5">
+                <h3>The @Model.User.UserName has not uploaded any files yet</h3>
             </div>
         }
         @if (Model.User.Id == @User.FindFirstValue(ClaimTypes.NameIdentifier) && !Model.User.EmailConfirmed)
         {
-            <div>
+            <div class="px-10 pt-5">
                 Check your email and follow the links in the email to complete your registration and be able to upload files.
             </div>
         }
