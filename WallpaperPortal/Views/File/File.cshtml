@@ -2,6 +2,11 @@
 @using System.Security.Claims;
 @{
     ViewData["Title"] = $"Wallpaper {string.Join(", ", Model.Tags.Select(t => t.Name))} download free";
+    ViewData["Meta"] = $"Wallpaper {string.Join(", ", Model.Tags.Select(t => t.Name))} download free";
+}
+
+@section metatags {
+    <meta name="content" content="Wallpaper {@string.Join(", ", @Model.Tags.Select(t => t.Name))} download free" />
 }
 
 <head>
@@ -86,7 +91,7 @@
     </div>
 
     <div class="container flex-row justify-content-center align-items-center">
-        <img class="image-box_img" src="@Model.Path" alt="@Model.Name">
+        <img class="image-box_img" src="@Model.Path" alt=$"Wallpaper @string.Join(", ", Model.Tags.Select(t => t.Name)) download free">
     </div>
 
 </div>

@@ -4,6 +4,10 @@
     ViewData["Title"] = $"Wallaper {string.Join(", ", Model.FilesQuery.Tag)} download free";
 }
 
+@section metatags {
+    <meta name="content" content="Wallpaper @Model.FilesQuery.Tag download free" />
+}
+
 <div class="container flex-column">
 
     @await Html.PartialAsync("_FileGallery", Model.PagedList.Items)
