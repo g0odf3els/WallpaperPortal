@@ -14,7 +14,7 @@
         @await Html.PartialAsync("_UserCard", Model.User)
         @if (@Model.User.Id == @User.FindFirstValue(ClaimTypes.NameIdentifier) || @User.IsInRole("Admin"))
         {
-            <form method="get" asp-action="ChangeProfileImage" asp-controller="Users" enctype="multipart/form-data">
+            <form method="get" class="px-10 pb-5" asp-action="ChangeProfileImage" asp-controller="Users" enctype="multipart/form-data">
                 <button class="animated-btn" type="submit">
                     <div class="flex-row justify-content-space-between align-items-center">
                         <span>Edit</span>
