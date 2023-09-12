@@ -50,6 +50,9 @@ jobs:
                        -e Smtp__Port="${{secrets.SMTP_PORT}}" \
                        -e Smtp__Username="${{secrets.SMTP_USERNAME}}" \
                        -e Smtp__Password="${{secrets.SMTP_PASSWORD}}" \
+                       -e AppSettings__UserName="${{secrets.APPSETTINGS_USERNAME}}" \
+                       -e AppSettings__UserEmail="${{secrets.APPSETTINGS_USEREMAIL}}" \
+                      -e AppSettings__UserPassword="${{secrets.APPSETTINGS_USERPASSWORD}}" \
                        -v dreamscape:/app/wwwroot/Uploads/ \
                        -p 8000:80/tcp \
                        --name dreamscape \
