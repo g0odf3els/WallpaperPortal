@@ -73,7 +73,7 @@ namespace Dreamscape.Controllers
                     return BadRequest();
                 }
 
-                var file = _unitOfWork.FileRepository.FindFirstByCondition(file => file.Id == id, new[] { "Tags" });
+                var file = _unitOfWork.FileRepository.FindFirstByCondition(file => file.Id == id, new[] { "User", "Tags" });
 
                 if (file != null)
                 {

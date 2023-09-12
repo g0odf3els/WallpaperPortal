@@ -4,6 +4,6 @@ namespace WallpaperPortal.Models
 {
     public class User : IdentityUser
     {
-        public int Year { get; set; }
+        public string? ProfileImage { get; set; }
     }
 }

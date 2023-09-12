@@ -1,0 +1,6 @@
+﻿@media (max-width: 800px) {
+    .profile {
+        flex-direction: column;
+    }
+}
+

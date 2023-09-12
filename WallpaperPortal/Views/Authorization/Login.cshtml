@@ -1,8 +1,7 @@
 ﻿@model WallpaperPortal.ViewModels.LoginViewModel
 
 <div class="container flex-row justify-content-center align-items-center">
-    <form class="form" method="post" asp-controller="Authorization" asp-action="Login"
-          asp-route-returnUrl="@Model.ReturnUrl">
+    <form class="form" method="post" asp-controller="Authorization" asp-action="Login" asp-route-returnUrl="@Model.ReturnUrl">
         <div asp-validation-summary="ModelOnly"></div>
 
         <h2 class="form-header">Login</h2>
