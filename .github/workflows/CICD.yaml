@@ -1,0 +1,57 @@
+name: CI/CD
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    name: Building image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v1
+        
+      - name: Docker hub login
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          
+      - name: Build and push
+        uses: docker/build-push-action@v2
+        with:
+          push: true
+          tags: g0odf3els/dreamscape:latest 
+
+  update_server:
+    name: Updating prod environment
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Replacing container
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SERVER_HOSTNAME }}
+          username: ${{ secrets.SERVER_USERNAME }}
+          password: ${{ secrets.SERVER_PASSWORD }}
+          script: |
+            docker image pull g0odf3els/dreamscape
+            docker container stop dreamscape
+            docker container prune -f
+            docker run -d \
+                       -e ConnectionStrings__DefaultConnection="${{secrets.CONNECTION_STRING}}" \
+                       -e Smtp__Host="${{secrets.SMTP_HOST}}" \
+                       -e Smtp__Port="${{secrets.SMTP_PORT}}" \
+                       -e Smtp__Username="${{secrets.SMTP_USERNAME}}" \
+                       -e Smtp__Password="${{secrets.SMTP_PASSWORD}}" \
+                       -v dreamscape:/app/wwwroot/Uploads/ \
+                       -p 8000:80/tcp \
+                       --name dreamscape \
+                       g0odf3els/dreamscape
+            docker image prune -f
