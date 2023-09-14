@@ -47,8 +47,8 @@ namespace Dreamscape.Controllers
 
                 if (result != null)
                 {
-                    return View(new FilesViewModel 
-                    { 
+                    return View(new FilesViewModel
+                    {
                         PagedList = result,
                         FilesQuery = query,
                     });
@@ -178,9 +178,9 @@ namespace Dreamscape.Controllers
                             Id = Guid.NewGuid().ToString(),
                             Name = tagName
                         };
-                        _unitOfWork.TagRepository.Create(Tag);
-                        file.Tags.Add(Tag);
                     }
+                    _unitOfWork.TagRepository.Create(Tag);
+                    file.Tags.Add(Tag);
                 }
                 _unitOfWork.FileRepository.Create(file);
                 _unitOfWork.Save();
