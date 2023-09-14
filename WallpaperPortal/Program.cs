@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
+using WallpaperPortal.Infrastructure;
 using WallpaperPortal.Models;
 using WallpaperPortal.Persistance;
 using WallpaperPortal.Services;
@@ -36,6 +37,8 @@ builder.Services.ConfigureApplicationCookie(options =>
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<ISitemapGenerator, SitemapGenerator>();
+
 builder.Services.AddControllersWithViews();
 
 await RoleInitializer.CreateRoles(builder.Services.BuildServiceProvider(), builder.Configuration);
