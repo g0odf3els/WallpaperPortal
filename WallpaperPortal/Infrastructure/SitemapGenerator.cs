@@ -33,7 +33,7 @@ namespace WallpaperPortal.Infrastructure
 
             foreach (var tag in _unitOfWork.TagRepository.FindAll())
             {
-                nodes.Add(urlHelper.AbsoluteAction("Files", "File", new { Tag = Uri.EscapeDataString(tag.Name) }));
+                nodes.Add(urlHelper.AbsoluteAction("Files", "File", new { Tag = tag.Name }));
             }
 
             return nodes;
@@ -48,7 +48,7 @@ namespace WallpaperPortal.Infrastructure
             {
                 XElement urlElement = new XElement(
                     xmlns + "url",
-                    new XElement(xmlns + "loc", Uri.EscapeUriString(sitemapNode)));
+                    new XElement(xmlns + "loc", sitemapNode));
                 root.Add(urlElement);
             }
 
