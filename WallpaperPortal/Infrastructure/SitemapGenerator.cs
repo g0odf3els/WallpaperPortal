@@ -33,7 +33,7 @@ namespace WallpaperPortal.Infrastructure
 
             foreach (var tag in _unitOfWork.TagRepository.FindAll())
             {
-                nodes.Add(urlHelper.AbsoluteAction("Files", "File", new { Tag = tag.Name }));
+                nodes.Add(urlHelper.AbsoluteAction("Files", "File", new { Tag = Uri.EscapeDataString(tag.Name) }));
             }
 
             return nodes;
