@@ -221,7 +221,7 @@ namespace Dreamscape.Controllers
                 _unitOfWork.FileRepository.Delete(file);
                 _unitOfWork.Save();
 
-                return RedirectToAction("Index", "File");
+                return RedirectToAction("Files", "File");
             }
             catch (Exception ex)
             {
