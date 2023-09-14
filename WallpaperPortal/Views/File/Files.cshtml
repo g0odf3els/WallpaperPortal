@@ -1,11 +1,11 @@
 ﻿@model WallpaperPortal.ViewModels.FilesViewModel
 
 @{
-    ViewData["Title"] = $"Wallaper {string.Join(", ", Model.FilesQuery.Tag)} download free";
+    ViewData["Title"] = $"Download {string.Join(", ", Model.FilesQuery.Tag)} wallpaper free";
 }
 
 @section metatags {
-    <meta name="content" content="Wallpaper @Model.FilesQuery.Tag download free" />
+    <meta name="content" content="Download @Model.FilesQuery.Tag wallpaper free" />
 }
 
 <div class="container flex-column">
