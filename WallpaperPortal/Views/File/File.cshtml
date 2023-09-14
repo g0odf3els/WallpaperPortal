@@ -1,12 +1,11 @@
 ﻿@model WallpaperPortal.Models.File;
 @using System.Security.Claims;
 @{
-    ViewData["Title"] = $"Wallpaper {string.Join(", ", Model.Tags.Select(t => t.Name))} download free";
-    ViewData["Meta"] = $"Wallpaper {string.Join(", ", Model.Tags.Select(t => t.Name))} download free";
+    ViewData["Title"] = $"Download {string.Join(", ", Model.Tags.Select(t => t.Name))} wallpaper free";
 }
 
 @section metatags {
-    <meta name="content" content="Wallpaper {@string.Join(", ", @Model.Tags.Select(t => t.Name))} download free" />
+    <meta name="content" content="Download {@string.Join(", ", @Model.Tags.Select(t => t.Name))} wallpaper free" />
 }
 
 <head>
