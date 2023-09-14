@@ -178,8 +178,8 @@ namespace Dreamscape.Controllers
                             Id = Guid.NewGuid().ToString(),
                             Name = tagName
                         };
+                        _unitOfWork.TagRepository.Create(Tag);
                     }
-                    _unitOfWork.TagRepository.Create(Tag);
                     file.Tags.Add(Tag);
                 }
                 _unitOfWork.FileRepository.Create(file);
