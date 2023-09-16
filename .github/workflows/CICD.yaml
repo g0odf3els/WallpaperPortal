@@ -56,5 +56,6 @@ jobs:
                        -v dreamscape:/app/wwwroot/Uploads/ \
                        -p 8000:80/tcp \
                        --name dreamscape \
+                       --memory=350m \
                        g0odf3els/dreamscape
             docker image prune -f
