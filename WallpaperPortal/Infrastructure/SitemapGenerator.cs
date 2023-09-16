@@ -48,7 +48,7 @@ namespace WallpaperPortal.Infrastructure
             {
                 XElement urlElement = new XElement(
                     xmlns + "url",
-                    new XElement(xmlns + "loc", Uri.EscapeUriString(sitemapNode)));
+                    new XElement(xmlns + "loc", sitemapNode));
                 root.Add(urlElement);
             }
 

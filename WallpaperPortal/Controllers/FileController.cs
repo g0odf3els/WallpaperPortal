@@ -47,8 +47,8 @@ namespace Dreamscape.Controllers
 
                 if (result != null)
                 {
-                    return View(new FilesViewModel 
-                    { 
+                    return View(new FilesViewModel
+                    {
                         PagedList = result,
                         FilesQuery = query,
                     });
@@ -179,8 +179,8 @@ namespace Dreamscape.Controllers
                             Name = tagName
                         };
                         _unitOfWork.TagRepository.Create(Tag);
-                        file.Tags.Add(Tag);
                     }
+                    file.Tags.Add(Tag);
                 }
                 _unitOfWork.FileRepository.Create(file);
                 _unitOfWork.Save();
@@ -221,7 +221,7 @@ namespace Dreamscape.Controllers
                 _unitOfWork.FileRepository.Delete(file);
                 _unitOfWork.Save();
 
-                return RedirectToAction("Index", "File");
+                return RedirectToAction("Files", "File");
             }
             catch (Exception ex)
             {
