@@ -56,6 +56,6 @@ jobs:
                        -v dreamscape:/app/wwwroot/Uploads/ \
                        -p 8000:80/tcp \
                        --name dreamscape \
-                       --restart unless-stopped \
+                       --restart always \
                        g0odf3els/dreamscape
             docker image prune -f
