@@ -78,6 +78,8 @@ namespace Dreamscape.Controllers
                 if (file != null)
                 {
                     var similarFiles = _unitOfWork.FileRepository.FindAllByCondition(f => f.Tags.Any(tag => file.Tags.Contains(tag))).Take(8).ToList();
+                    similarFiles.RemoveAll(f => f.Id == file.Id);
+
                     return View(new FileViewModel()
                     {
                         File = file,
@@ -152,7 +154,7 @@ namespace Dreamscape.Controllers
                     file = new File()
                     {
                         Id = fileId,
-                        Name = fileId,
+                        Name = $"{fileId}{Path.GetExtension(upload.FileName)}",
                         Height = image.Height,
                         Width = image.Width,
                         Lenght = upload.Length,
