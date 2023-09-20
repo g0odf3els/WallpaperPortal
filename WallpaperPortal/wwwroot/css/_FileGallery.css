@@ -25,9 +25,14 @@
 
 .file-gallery_container {
     position: relative;
-    border: 1px solid #000;
     box-shadow: rgba(0, 0, 0, 0.35) 0 5px 15px;
+    height: fit-content;
+    display: flex;
 }
+
+    .file-gallery_container a {
+        width: 100%;
+    }
 
 .file-gallery_img {
     object-fit: cover;
@@ -47,4 +52,11 @@
 
 .file-gallery_container:hover .file-gallery_conainer-overlay {
     display: block;
+}
+
+.similar-files {
+    padding: 25px;
+    display: grid;
+    gap: 15px;
+    grid-template-columns: repeat(1, 1fr);
 }
