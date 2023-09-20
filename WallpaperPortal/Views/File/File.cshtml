@@ -1,38 +1,41 @@
-﻿@model WallpaperPortal.Models.File;
+﻿@model WallpaperPortal.ViewModels.FileViewModel;
+
 @using System.Security.Claims;
 @{
-    ViewData["Title"] = $"Download {string.Join(", ", Model.Tags.Select(t => t.Name))} wallpaper free";
+    ViewData["Title"] = $"Download {string.Join(", ", Model.File.Tags.Select(t => t.Name))} wallpaper free";
 }
 
 @section metatags {
-    <meta name="content" content="Download {@string.Join(", ", @Model.Tags.Select(t => t.Name))} wallpaper free" />
+    <meta name="content" content="Download {@string.Join(", ", @Model.File.Tags.Select(t => t.Name))} wallpaper free" />
 }
 
 <head>
     <link href="~/css/File.css" rel="stylesheet" />
+    <link href="~/css/_FileGallery.css" rel="stylesheet" />
 </head>
 
 <div class="file container flex-row">
 
     <div class="side-bar">
 
-        @await Html.PartialAsync("_UserCard", Model.User)
-
+        @await Html.PartialAsync("_UserCard", Model.File.User)
+       
         <div class="file-info pt-5 px-10">
             <div class="file-resolution mt-10">
-                @Model.Width x @Model.Height
+                @Model.File.Width x @Model.File.Height
             </div>
             <div class="sub-file-info">
                 <div>
-                    @Model.CreationTime
+                    @Model.File.CreationTime
                 </div>
                 <div>
-                    @Math.Round((Model.Lenght / 1048576), 3)Mb
+                    @Math.Round((Model.File.Lenght / 1048576), 3)Mb
                 </div>
             </div>
+
         </div>
 
-        <form class="pt-5 px-10" method="post" asp-action="Download" asp-controller="File" asp-route-id="@Model.Id" enctype="multipart/form-data">
+        <form class="pt-5 px-10" method="post" asp-action="Download" asp-controller="File" asp-route-id="@Model.File.Id" enctype="multipart/form-data">
             <button class="animated-btn" type="submit">
                 <div class="flex-row justify-content-space-between align-items-center">
                     <span>Download</span>
@@ -41,9 +44,9 @@
             </button>
         </form>
 
-        @if (@Model.UserId == @User.FindFirstValue(ClaimTypes.NameIdentifier) || @User.IsInRole("Admin"))
+        @if (@Model.File.UserId == @User.FindFirstValue(ClaimTypes.NameIdentifier) || @User.IsInRole("Admin"))
         {
-            <form class="pt-5 px-10" method="post" asp-action="Delete" asp-controller="File" asp-route-id="@Model.Id" enctype="multipart/form-data">
+            <form class="pt-5 px-10" method="post" asp-action="Delete" asp-controller="File" asp-route-id="@Model.File.Id" enctype="multipart/form-data">
                 <button class="animated-btn" type="submit">
                     <div class="flex-row justify-content-space-between align-items-center">
                         <span>Delete</span>
@@ -53,9 +56,9 @@
             </form>
         }
 
-        @if (Model.UserId == @User.FindFirstValue(ClaimTypes.NameIdentifier))
+        @if (Model.File.UserId == @User.FindFirstValue(ClaimTypes.NameIdentifier))
         {
-            <form class="add-tag-form pt-5 px-10" method="post" asp-action="AddTag" asp-controller="File" asp-route-id="@Model.Id" enctype="multipart/form-data">
+            <form class="add-tag-form pt-5 px-10" method="post" asp-action="AddTag" asp-controller="File" asp-route-id="@Model.File.Id" enctype="multipart/form-data">
                 <input name="tagName" />
                 <button class="animated-btn" type="submit">
                     <div class="flex-row justify-content-center align-items-center">
@@ -65,8 +68,8 @@
             </form>
         }
 
-        <div id="tagList" class="pt-5 px-10">
-            @foreach (Tag tag in Model.Tags)
+        <div id="tagList" class="pt-5 px-10 pb-5">
+            @foreach (Tag tag in Model.File.Tags)
             {
                 <div class="flex-row">
                     <a asp-controller="File" asp-action="Files" asp-route-tag="@tag.Name">
@@ -74,9 +77,9 @@
                             @tag.Name
                         </span>
                     </a>
-                    @if (Model.UserId == @User.FindFirstValue(ClaimTypes.NameIdentifier))
+                    @if (Model.File.UserId == @User.FindFirstValue(ClaimTypes.NameIdentifier))
                     {
-                        <form method="post" asp-action="RemoveTag" asp-controller="File" asp-route-id="@Model.Id" asp-route-tagName="@tag.Name" enctype="multipart/form-data">
+                        <form method="post" asp-action="RemoveTag" asp-controller="File" asp-route-id="@Model.File.Id" asp-route-tagName="@tag.Name" enctype="multipart/form-data">
                             <button class="delete-tag-btn" type="submit">
                                 <div class="flex-row justify-content-center align-items-center">
                                     <span class="material-symbols-outlined">close</span>
@@ -90,7 +93,22 @@
     </div>
 
     <div class="container flex-row justify-content-center align-items-center">
-        <img class="image-box_img" src="@Model.Path" alt="Wallpaper @string.Join(", ", Model.Tags.Select(t => t.Name)) download free">
+        <img class="image-box_img" src="@Model.File.Path" alt="Wallpaper @string.Join(", ", Model.File.Tags.Select(t => t.Name)) download free">
     </div>
 
+    <div class="side-bar">
+        <div class="similar-files">
+            @foreach (var file in Model.SimilarFiles)
+            {
+                <div class="file-gallery_container">
+                    <a asp-action="File" asp-controller="File" asp-route-id="@file.Id">
+                        <img class="container file-gallery_img" src="@file.PreviewPath" alt=$"Wallpaper @string.Join(", ", @file.Tags.Select(t => t.Name)) download free">
+                    </a>
+                    <div class="file-gallery_conainer-overlay">
+                        @file.Width x @file.Height
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
 </div>

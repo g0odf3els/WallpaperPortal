@@ -77,7 +77,12 @@ namespace Dreamscape.Controllers
 
                 if (file != null)
                 {
-                    return View(file);
+                    var similarFiles = _unitOfWork.FileRepository.FindAllByCondition(f => f.Tags.Any(tag => file.Tags.Contains(tag))).Take(8).ToList();
+                    return View(new FileViewModel()
+                    {
+                        File = file,
+                        SimilarFiles = similarFiles
+                    });
                 }
 
                 return NotFound();
