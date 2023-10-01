@@ -111,10 +111,10 @@ namespace Dreamscape.Controllers
                     return BadRequest();
                 }
 
-                if (!user.EmailConfirmed)
-                {
-                    return Forbid();
-                }
+                //if (!user.EmailConfirmed)
+                //{
+                //    return Forbid();
+                //}
 
                 return View();
             }
