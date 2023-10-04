@@ -4,28 +4,28 @@
     <form class="form" method="post" asp-controller="Authorization" asp-action="Login" asp-route-returnUrl="@Model.ReturnUrl">
         <div asp-validation-summary="ModelOnly"></div>
 
-        <h2 class="form-header">Login</h2>
+        <h1 class="form__header">Login</h1>
 
-        <div class="form-block">
+        <div class="form__block">
             <label asp-for="Username"></label><br />
             <input asp-for="Username" />
             <span asp-validation-for="Username"></span>
         </div>
 
-        <div class="form-block">
+        <div class="form__block">
             <label asp-for="Password"></label><br />
             <input asp-for="Password" />
             <span asp-validation-for="Password"></span>
         </div>
 
-        <div class="form-block">
+        <div class="form__block">
             <div class="remember-div">
                 <input asp-for="RememberMe" />
                 <label asp-for="RememberMe"></label><br />
             </div>
         </div>
 
-        <div class="form-block">
+        <div class="form__block">
             <button class="animated-btn" type="submit">
                 <div class="flex-row justify-content-space-between align-items-center">
                     <span>Login</span>
@@ -34,7 +34,7 @@
             </button>
         </div>
 
-        <div class="form-block">
+        <div class="form__block">
             <div>
                 <a asp-controller="Authorization" asp-action="Register">Need an account?</a>
             </div>

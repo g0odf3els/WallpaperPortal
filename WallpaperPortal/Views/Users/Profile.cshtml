@@ -1,4 +1,4 @@
-﻿﻿@using System.Security.Claims;
+﻿@using System.Security.Claims;
 @model WallpaperPortal.ViewModels.ProfileViewModel
 @{
     ViewData["Title"] = Model.User.UserName;
@@ -10,8 +10,10 @@
 
 <div class="profile container flex-row">
 
-    <div class="side-bar flex-column">
+    <div class="sidebar flex-column">
+
         @await Html.PartialAsync("_UserCard", Model.User)
+
         @if (@Model.User.Id == @User.FindFirstValue(ClaimTypes.NameIdentifier) || @User.IsInRole("Admin"))
         {
             <form method="get" class="px-10 pb-5" asp-action="ChangeProfileImage" asp-controller="Users" enctype="multipart/form-data">
@@ -23,6 +25,7 @@
                 </button>
             </form>
         }
+
     </div>
 
     <div class="container">

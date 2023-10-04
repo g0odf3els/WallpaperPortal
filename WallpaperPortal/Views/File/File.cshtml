@@ -11,21 +11,18 @@
     <meta name="keywords" content="Download @string.Join(", ", @Model.File.Tags.Select(t => t.Name)) wallpaper for free" />
 }
 
-<head>
-    <link href="~/css/File.css" rel="stylesheet" />
-    <link href="~/css/_FileGallery.css" rel="stylesheet" />
-</head>
-
 <div class="file container flex-row">
 
-    <div class="side-bar">
+    <div class="sidebar">
 
         @await Html.PartialAsync("_UserCard", Model.File.User)
 
         <div class="file-info pt-5 px-10">
+
             <div class="file-resolution mt-10">
                 @Model.File.Width x @Model.File.Height
             </div>
+
             <div class="sub-file-info">
                 <div>
                     @Model.File.CreationTime
@@ -70,32 +67,35 @@
             </form>
         }
 
-        <div id="tagList" class="pt-5 px-10 pb-5">
+        <div class="tag-list pt-5 px-10 pb-5">
             @foreach (Tag tag in Model.File.Tags)
             {
                 <div class="flex-row">
-                    <a asp-controller="File" asp-action="Files" asp-route-tag="@tag.Name">
-                        <span class="tag-element">
+
+                    <a class="tag-list__link" asp-controller="File" asp-action="Files" asp-route-tag="@tag.Name">
+                        <span class="tag-list__tag">
                             @tag.Name
                         </span>
                     </a>
+
                     @if (Model.File.UserId == @User.FindFirstValue(ClaimTypes.NameIdentifier))
                     {
                         <form method="post" asp-action="RemoveTag" asp-controller="File" asp-route-id="@Model.File.Id" asp-route-tagName="@tag.Name" enctype="multipart/form-data">
-                            <button class="delete-tag-btn" type="submit">
+                            <button class="tag__delete-btn" type="submit">
                                 <div class="flex-row justify-content-center align-items-center">
                                     <span class="material-symbols-outlined">close</span>
                                 </div>
                             </button>
                         </form>
                     }
+
                 </div>
             }
         </div>
     </div>
 
-    <div class="container flex-row justify-content-center align-items-center">
-        <img class="image-box_img" src="@Model.File.Path" alt="Wallpaper @string.Join(", ", Model.File.Tags.Select(t => t.Name)) download free">
+    <div class="image-box">
+        <img class="image-box__img" src="@Model.File.Path" alt="Wallpaper @string.Join(", ", Model.File.Tags.Select(t => t.Name)) download free">
     </div>
 
     <div class="side-bar">
