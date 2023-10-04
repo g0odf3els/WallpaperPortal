@@ -43,7 +43,7 @@ namespace Dreamscape.Controllers
                     expressions = expressions.Append(f => f.Height.ToString() == query.Height).ToArray();
                 }
 
-                var result = _unitOfWork.FileRepository.GetPaged(page, pageSize, expressions);
+                var result = _unitOfWork.FileRepository.GetPaged(page, pageSize, new[] { "Tags" }, expressions);
 
                 if (result != null)
                 {

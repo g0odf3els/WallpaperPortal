@@ -33,9 +33,15 @@ namespace WallpaperPortal.Repositories
         public IQueryable<T> FindAllByCondition(Expression<Func<T, bool>> expression) =>
             _context.Set<T>().Where(expression).AsNoTracking();
 
-        public PagedList<T> GetPaged(int pageNumber, int pageSize, params Expression<Func<T, bool>>[] expressions)
+        public PagedList<T> GetPaged(int pageNumber, int pageSize, string[]? include = null, params Expression<Func<T, bool>>[] expressions)
         {
             IQueryable<T> query = _context.Set<T>().AsNoTracking();
+
+            if (include != null)
+            {
+                query = include.Aggregate(query,
+                          (current, include) => current.Include(include));
+            }
 
             foreach (var expression in expressions)
             {
