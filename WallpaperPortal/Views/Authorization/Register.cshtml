@@ -4,35 +4,33 @@
     <form class="form" method="post" asp-controller="Authorization" asp-action="Register">
         <div asp-validation-summary="ModelOnly"></div>
 
-        <h2 class="form-header">Registraion</h2>
+        <h1 class="form_header">Registraion</h1>
 
-        <div class="form-block">
+        <div class="form__block">
             <label asp-for="Username"></label><br />
             <input asp-for="Username" />
             <span asp-validation-for="Username"></span>
         </div>
 
-        <div class="form-block">
-
+        <div class="form__block">
             <label asp-for="Email"></label><br />
             <input asp-for="Email" />
             <span asp-validation-for="Email"></span>
         </div>
 
-        <div class="form-block">
+        <div class="form__block">
             <label asp-for="Password"></label><br />
             <input asp-for="Password" />
             <span asp-validation-for="Password"></span>
         </div>
 
-        <div class="form-block">
-
+        <div class="form__block">
             <label asp-for="PasswordConfirm"></label><br />
             <input asp-for="PasswordConfirm" />
             <span asp-validation-for="PasswordConfirm"></span>
         </div>
 
-        <div class="form-block">
+        <div class="form__block">
             <button class="animated-btn" type="submit">
                 <div class="flex-row justify-content-space-between align-items-center">
                     <span>Register</span>
@@ -41,7 +39,7 @@
             </button>
         </div>
 
-        <div class="form-block">
+        <div class="form__block">
             <a asp-controller="Authorization" asp-action="Login">Already have an account?</a>
         </div>
 

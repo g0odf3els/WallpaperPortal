@@ -137,7 +137,7 @@ namespace WallpaperPortal.Controllers
                 return NotFound();
             }
 
-            var pagedList = _unitOfWork.FileRepository.GetPaged(page, pageSize, f => f.UserId == user.Id);
+            var pagedList = _unitOfWork.FileRepository.GetPaged(page, pageSize, new[] {"Tags" },  f => f.UserId == user.Id);
 
             return View(new ProfileViewModel()
             {

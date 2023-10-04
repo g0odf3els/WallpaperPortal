@@ -1,44 +1,44 @@
-﻿﻿@{
+﻿@{
     ViewData["Title"] = "Upload";
 }
 
 <div class="container flex-row justify-content-center align-items-center">
     <form class="form" asp-action="Upload" asp-controller="File" method="post" enctype="multipart/form-data">
 
-        <div class="form-block">
+        <div class="form__block">
             <h2>Choice file to upload</h2>
         </div>
 
-        <div class="form-block">
-            <div class="form_img">
-                <img id="imagePreview" />
+        <div class="form__block">
+            <div class="form__img">
+                <img id="imagePreview" class="imagePreview" />
             </div>
         </div>
 
-        <div class="form-block">
+        <div class="form__block">
             <div id="tagList">
             </div>
         </div>
 
-        <div class="form-block">
+        <div class="form__block">
             <input class="upload-file" type="file" name="upload" id="fileInput" />
         </div>
 
-        <div class="form-block">
+        <div class="form__block">
             <label for="tags">Enter tag:</label>
             <input type="text" name="tags" id="tags" />
         </div>
 
-        <div class="form-block" id="fileDetails">
+        <div class="form__block" id="fileDetails">
         </div>
 
-        <div class="form-block">
+        <div class="form__block">
             <button type="button" id="addTagBtn" class="animated-btn">
                 Add Tag
             </button>
         </div>
 
-        <div class="form-block">
+        <div class="form__block">
             <button class="animated-btn" type="submit" value="Upload">
                 Upload
             </button>
