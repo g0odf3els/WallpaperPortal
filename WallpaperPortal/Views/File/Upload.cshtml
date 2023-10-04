@@ -58,13 +58,13 @@
 
                 tagsList.forEach(function (tag) {
                     var tagElement = $("<span/>", {
-                        class: "tag-element",
+                        class: "tag-list__tag",
                         text: tag
                     });
 
                     var tagButton = $("<button/>", {
                         text: "x",
-                        class: "delete-tag-btn",
+                        class: "tag__delete-btn",
                         click: function () {
                             tagsList = tagsList.filter(function (item) {
                                 return item !== tag;
