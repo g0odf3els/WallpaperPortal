@@ -144,10 +144,10 @@ body {
         padding-right: 0px;
     }
 
-        .nav :nth-child(2) {
-            width: 100%;
-            order: 3;
-        }
+    .nav :nth-child(2) {
+        width: 100%;
+        order: 3;
+    }
 }
 /*--------------------*/
 
@@ -471,12 +471,11 @@ body {
 }
 
 .image-box {
- display: flex;
- justify-content: center;
- align-items: center;
- width: 100%;
- height: 100%;
-
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
 }
 
 .image-box__img {
@@ -520,6 +519,15 @@ body {
     }
 }
 
+/*--------------------*/
+
+/*----similar-files---*/
+.similar-files {
+    padding: 25px;
+    display: grid;
+    gap: 15px;
+    grid-template-columns: repeat(1, 1fr);
+}
 /*--------------------*/
 
 
