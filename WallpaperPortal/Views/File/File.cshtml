@@ -6,9 +6,9 @@
 }
 
 @section metatags {
-    <meta name="content" content="Download @string.Join(", ", @Model.File.Tags.Select(t => t.Name)) wallpaper for free" />
-    <meta name="description" content="Download @string.Join(", ", @Model.File.Tags.Select(t => t.Name)) wallpaper for free" />
-    <meta name="keywords" content="Download @string.Join(", ", @Model.File.Tags.Select(t => t.Name)) wallpaper for free" />
+    <meta name="content" content="Download @string.Join(", ", @Model.File.Tags.Select(t => t.Name)) @Model.File.Width x @Model.File.Height wallpaper for free" />
+    <meta name="description" content="Download @string.Join(", ", @Model.File.Tags.Select(t => t.Name)) @Model.File.Width x @Model.File.Height wallpaper for free" />
+    <meta name="keywords" content="Download @string.Join(", ", @Model.File.Tags.Select(t => t.Name)) @Model.File.Width x @Model.File.Height wallpaper for free" />
 }
 
 <div class="file container flex-row">
@@ -95,7 +95,9 @@
     </div>
 
     <div class="image-box">
-        <img class="image-box__img" src="@Model.File.Path" alt="Wallpaper @string.Join(", ", Model.File.Tags.Select(t => t.Name)) download free">
+        <img class="image-box__img" 
+             src="@Model.File.Path"
+             alt="Download @string.Join(", ", Model.File.Tags.Select(t => t.Name)) @Model.File.Width x @Model.File.Height wallpaper for free">
     </div>
 
     <div class="side-bar">
@@ -106,7 +108,9 @@
                 {
                     <div class="file-gallery_container">
                         <a asp-action="File" asp-controller="File" asp-route-id="@file.Id">
-                            <img class="container file-gallery_img" src="@file.PreviewPath" alt=$"Wallpaper @string.Join(", ", @file.Tags.Select(t => t.Name)) download free">
+                            <img class="container file-gallery_img" 
+                            src="@file.PreviewPath" 
+                            alt="Download @string.Join(", ", @file.Tags.Select(t => t.Name)) @Model.File.Width x @Model.File.Height wallpaper for free">
                         </a>
                         <div class="file-gallery_conainer-overlay">
                             @file.Width x @file.Height
