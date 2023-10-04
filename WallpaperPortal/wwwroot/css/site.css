@@ -287,6 +287,7 @@ body {
 }
 
 .tag__delete-btn {
+    padding-left: 5px;
     padding-right: 5px;
     background: black;
     border: none;
