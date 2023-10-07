@@ -14,11 +14,13 @@ namespace Dreamscape.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly ILogger<FileController> _logger;
+        private readonly IHostEnvironment _hostEnvironment;
 
-        public FileController(IUnitOfWork unitOfWork, ILogger<FileController> logger)
+        public FileController(IUnitOfWork unitOfWork, ILogger<FileController> logger, IHostEnvironment hostEnvironment)
         {
             _unitOfWork = unitOfWork;
             _logger = logger;
+            _hostEnvironment = hostEnvironment;
         }
 
         [HttpGet("Files")]
@@ -111,7 +113,7 @@ namespace Dreamscape.Controllers
                     return BadRequest();
                 }
 
-                if (!user.EmailConfirmed)
+                if (!user.EmailConfirmed && !_hostEnvironment.IsDevelopment())
                 {
                     return Forbid();
                 }
@@ -133,9 +135,6 @@ namespace Dreamscape.Controllers
         {
             try
             {
-                int _previewWidth = 432;
-                int _previewHeight = 243;
-
                 var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
                 string fileId = Guid.NewGuid().ToString();
 
@@ -151,6 +150,11 @@ namespace Dreamscape.Controllers
 
                 using (MagickImage image = new MagickImage($"wwwroot/{filePath}"))
                 {
+                    double aspectRatio = (double)image.Width / image.Height;
+
+                    int _previewWidth = 800; 
+                    int _previewHeight = (int)(_previewWidth / aspectRatio);
+
                     file = new File()
                     {
                         Id = fileId,

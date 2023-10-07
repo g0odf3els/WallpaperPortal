@@ -8,7 +8,7 @@
 
 			<a asp-action="File" asp-controller="File" asp-route-id="@file.Id">
 				<img class="container file-gallery__img" 
-					 src="@file.PreviewPath"
+					 src="@file.Path"
 					 alt="Download @string.Join(", ", @file.Tags.Select(t => t.Name)) @file.Width x @file.Height wallpaper for free">
 			</a>
 

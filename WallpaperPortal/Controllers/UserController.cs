@@ -128,7 +128,7 @@ namespace WallpaperPortal.Controllers
             return RedirectToAction("Index");
         }
 
-        public  IActionResult Profile(string id, int page = 1, int pageSize = 12)
+        public  IActionResult Profile(string id, int page = 1, int pageSize = 8)
         {
             var user = _unitOfWork.UserRepository.FindFirstByCondition(u => u.Id == id);
 
