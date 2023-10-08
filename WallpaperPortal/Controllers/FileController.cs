@@ -7,6 +7,7 @@ using WallpaperPortal.Persistance;
 using ImageMagick;
 using WallpaperPortal.Queries;
 using System.Linq.Expressions;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Dreamscape.Controllers
 {
@@ -14,11 +15,21 @@ namespace Dreamscape.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly ILogger<FileController> _logger;
+        private readonly IHostEnvironment _hostEnvironment;
 
-        public FileController(IUnitOfWork unitOfWork, ILogger<FileController> logger)
+        public FileController(IUnitOfWork unitOfWork, ILogger<FileController> logger, IHostEnvironment hostEnvironment)
         {
             _unitOfWork = unitOfWork;
             _logger = logger;
+            _hostEnvironment = hostEnvironment;
+
+            foreach (var file in _unitOfWork.FileRepository.FindAll())
+            {
+                if (System.IO.File.Exists($"wwwroot/{file.Path}") && !System.IO.File.Exists($"wwwroot/{file.PreviewPath}"))
+                {
+                    CreatePreviewForFile(file);
+                }
+            }
         }
 
         [HttpGet("Files")]
@@ -111,7 +122,7 @@ namespace Dreamscape.Controllers
                     return BadRequest();
                 }
 
-                if (!user.EmailConfirmed)
+                if (!user.EmailConfirmed && !_hostEnvironment.IsDevelopment())
                 {
                     return Forbid();
                 }
@@ -133,66 +144,41 @@ namespace Dreamscape.Controllers
         {
             try
             {
-                int _previewWidth = 432;
-                int _previewHeight = 243;
-
                 var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                string fileId = Guid.NewGuid().ToString();
+                var fileId = Guid.NewGuid().ToString();
 
                 var filePath = $"/Uploads/Files/{fileId}{Path.GetExtension(upload.FileName)}";
-                var previewPath = $"/Uploads/Previews/{fileId}.jpg";
 
                 using (var stream = new FileStream($"wwwroot/{filePath}", FileMode.Create))
                 {
                     upload.CopyTo(stream);
                 }
 
-                File file;
+                File file = new File()
+                {
+                    Id = fileId,
+                    Name = $"{fileId}{Path.GetExtension(upload.FileName)}",
+                    Lenght = upload.Length,
+                    Path = $"/Uploads/Files/{fileId}{Path.GetExtension(upload.FileName)}",
+                    CreationTime = DateTime.Now,
+                    UserId = userId
+                };
 
                 using (MagickImage image = new MagickImage($"wwwroot/{filePath}"))
                 {
-                    file = new File()
-                    {
-                        Id = fileId,
-                        Name = $"{fileId}{Path.GetExtension(upload.FileName)}",
-                        Height = image.Height,
-                        Width = image.Width,
-                        Lenght = upload.Length,
-                        Path = filePath,
-                        PreviewPath = previewPath,
-                        CreationTime = DateTime.Now,
-                        UserId = userId
-                    };
-
-                    image.Resize(new MagickGeometry(_previewWidth, _previewHeight)
-                    {
-                        FillArea = true
-                    });
-
-                    image.Extent(_previewWidth, _previewHeight, Gravity.Center);
-
-                    image.Write($"wwwroot/{previewPath}");
+                    file.Height = image.Height;
+                    file.Width = image.Width;
                 }
 
-                List<string> fileTags = tagsList?.Split(',').ToList() ?? new List<string>();
-                foreach (var tagName in fileTags)
-                {
-                    var Tag = _unitOfWork.TagRepository.FindFirstByCondition(tag => tag.Name == tagName);
-                    if (Tag == null)
-                    {
-                        Tag = new Tag()
-                        {
-                            Id = Guid.NewGuid().ToString(),
-                            Name = tagName
-                        };
-                        _unitOfWork.TagRepository.Create(Tag);
-                    }
-                    file.Tags.Add(Tag);
-                }
+                CreatePreviewForFile(file);
+
+                AddTagsToFile(file, tagsList?.Split(',').ToList());
+
                 _unitOfWork.FileRepository.Create(file);
                 _unitOfWork.Save();
 
                 return RedirectToAction("Files", "File");
+
             }
             catch (Exception ex)
             {
@@ -223,6 +209,16 @@ namespace Dreamscape.Controllers
                 if (file.UserId != User.FindFirstValue(ClaimTypes.NameIdentifier) && !@User.IsInRole("Admin"))
                 {
                     return Forbid();
+                }
+
+                if (System.IO.File.Exists($"wwwroot/{file.Path}"))
+                {
+                    System.IO.File.Delete($"wwwroot/{file.Path}");
+                }
+
+                if (System.IO.File.Exists($"wwwroot/{file.PreviewPath}"))
+                {
+                    System.IO.File.Delete($"wwwroot/{file.PreviewPath}");
                 }
 
                 _unitOfWork.FileRepository.Delete(file);
@@ -338,6 +334,56 @@ namespace Dreamscape.Controllers
             {
                 _logger.LogError(ex.ToString());
                 return BadRequest();
+            }
+        }
+
+        private void CreatePreviewForFile(File file)
+        {
+            using (MagickImage image = new MagickImage($"wwwroot/{file.Path}"))
+            {
+                double aspectRatio = (double)image.Width / image.Height;
+
+                int _previewWidth = 450;
+                int _previewHeight = (int)(_previewWidth / aspectRatio);
+
+                image.Resize(new MagickGeometry(_previewWidth, _previewHeight)
+                {
+                    FillArea = true
+                });
+
+                image.Extent(_previewWidth, _previewHeight, Gravity.Center);
+
+                if (file.PreviewPath == null)
+                {
+                    file.PreviewPath = $"/Uploads/Previews/{file.Id}.jpg";
+                }
+
+                image.Write($"wwwroot/{file.PreviewPath}");
+            }
+        }
+
+        private void AddTagsToFile(File file, List<string>? tags)
+        {
+            if (tags == null)
+            {
+                return;
+            }
+
+            foreach (var tagName in tags)
+            {
+                var Tag = _unitOfWork.TagRepository.FindFirstByCondition(tag => tag.Name == tagName);
+
+                if (Tag == null)
+                {
+                    Tag = new Tag()
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        Name = tagName
+                    };
+                    _unitOfWork.TagRepository.Create(Tag);
+                }
+
+                file.Tags.Add(Tag);
             }
         }
 
