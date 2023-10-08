@@ -164,7 +164,7 @@ namespace WallpaperPortal.Controllers
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async IActionResult ChangeProfileImage(IFormFile upload)
+        public IActionResult ChangeProfileImage(IFormFile upload)
         {
             try
             {
