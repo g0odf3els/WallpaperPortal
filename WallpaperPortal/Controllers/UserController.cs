@@ -148,7 +148,7 @@ namespace WallpaperPortal.Controllers
 
         [Authorize]
         [HttpGet]
-        public async Task<IActionResult> ChangeProfileImage()
+        public  IActionResult ChangeProfileImage()
         {
             var user = _unitOfWork.UserRepository.FindFirstByCondition(user => user.Id == User.FindFirstValue(ClaimTypes.NameIdentifier));
 
@@ -164,7 +164,7 @@ namespace WallpaperPortal.Controllers
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ChangeProfileImage(IFormFile upload)
+        public async IActionResult ChangeProfileImage(IFormFile upload)
         {
             try
             {
@@ -189,6 +189,12 @@ namespace WallpaperPortal.Controllers
                     image.Extent(targetWidth, targetHeight, Gravity.Center);
 
                     image.Write($"wwwroot/Uploads/ProfileImages/{user.Id}{Path.GetExtension(upload.FileName)}");
+
+                    if (System.IO.File.Exists($"wwwroot/{user.ProfileImage}"))
+                    {
+                        System.IO.File.Delete($"wwwroot/{user.ProfileImage}");
+                    }
+
                 }
 
                 user.ProfileImage = $"/Uploads/ProfileImages/{user.Id}{Path.GetExtension(upload.FileName)}";

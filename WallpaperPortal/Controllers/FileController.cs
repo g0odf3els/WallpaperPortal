@@ -166,7 +166,7 @@ namespace Dreamscape.Controllers
 
                 using (MagickImage image = new MagickImage($"wwwroot/{filePath}"))
                 {
-                    file.Height = image.Height; 
+                    file.Height = image.Height;
                     file.Width = image.Width;
                 }
 
@@ -209,6 +209,16 @@ namespace Dreamscape.Controllers
                 if (file.UserId != User.FindFirstValue(ClaimTypes.NameIdentifier) && !@User.IsInRole("Admin"))
                 {
                     return Forbid();
+                }
+
+                if (System.IO.File.Exists($"wwwroot/{file.Path}"))
+                {
+                    System.IO.File.Delete($"wwwroot/{file.Path}");
+                }
+
+                if (System.IO.File.Exists($"wwwroot/{file.PreviewPath}"))
+                {
+                    System.IO.File.Delete($"wwwroot/{file.PreviewPath}");
                 }
 
                 _unitOfWork.FileRepository.Delete(file);
@@ -354,7 +364,7 @@ namespace Dreamscape.Controllers
 
         private void AddTagsToFile(File file, List<string>? tags)
         {
-            if(tags == null)
+            if (tags == null)
             {
                 return;
             }
