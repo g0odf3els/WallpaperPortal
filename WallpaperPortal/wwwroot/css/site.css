@@ -362,34 +362,34 @@ body {
 /*----file-gallery----*/
 .file-gallery {
     padding: 15px;
-    display: grid;
-    gap: 15px;
-    grid-template-columns: repeat(4, 1fr);
+    column-count: 4;
+    column-gap: 15px;
 }
 
 @media (max-width: 1500px) {
     .file-gallery {
-        grid-template-columns: repeat(3, 1fr);
+        column-count: 3;
     }
 }
 
 @media (max-width: 1000px) {
     .file-gallery {
-        grid-template-columns: repeat(2, 1fr);
+        column-count: 2;
     }
 }
 
 @media (max-width: 600px) {
     .file-gallery {
-        grid-template-columns: repeat(1, 1fr);
+        column-count: 1;
     }
 }
 
 .file-gallery__container {
+    margin-bottom: 15px;
+    display: flex;
     position: relative;
     box-shadow: rgba(0, 0, 0, 0.35) 0 5px 15px;
     height: fit-content;
-    display: flex;
 }
 
     .file-gallery__container a {
@@ -419,11 +419,15 @@ body {
 
 /*----similar-files---*/
 .similar-files {
-    padding: 25px;
     display: grid;
-    gap: 15px;
     grid-template-columns: repeat(1, 1fr);
 }
+
+    .similar-files .file-gallery__container {
+        margin: 10px;
+    }
+
+
 /*--------------------*/
 
 
@@ -472,6 +476,7 @@ body {
 }
 
 .image-box {
+    padding: 25px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -481,8 +486,8 @@ body {
 
 .image-box__img {
     position: relative;
-    max-height: 90%;
-    max-width: 90%;
+    max-height: 100%;
+    max-width: 100%;
     object-fit: contain;
     box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
 }
@@ -518,19 +523,19 @@ body {
         flex-direction: row;
         flex-wrap: wrap;
     }
+
+    .image-box {
+        padding: 10px;
+    }
 }
 
 /*--------------------*/
 
-/*----similar-files---*/
-.similar-files {
-    padding: 25px;
-    display: grid;
-    gap: 15px;
-    grid-template-columns: repeat(1, 1fr);
+.profile {
+    min-height: 100%;
+    height: 100%;
+    height: fit-content;
 }
-/*--------------------*/
-
 
 @media (max-width: 800px) {
     .profile {
