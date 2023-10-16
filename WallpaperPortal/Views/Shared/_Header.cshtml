@@ -15,17 +15,26 @@
         <div class="nav_auth-container">
             @if (User.Identity.IsAuthenticated)
             {
-                <a class="nav__link" asp-controller="File" asp-action="Upload">Upload</a>
-                <a class="nav__link" asp-controller="Users" asp-action="Profile" asp-route-id="@User.FindFirstValue(ClaimTypes.NameIdentifier)">@User.Identity.Name</a>
-                <a class="nav__link" asp-controller="Authorization" asp-action="Logout">Logout</a>
+                <div class="dropdown">
+                    <button class="dropbtn" id="dropbtn">@User.Identity.Name</button>
+                    <div class="dropdown-content">
+                        <a class="nav__link" asp-controller="File" asp-action="Upload">Upload</a>
+                        <a class="nav__link" asp-controller="Users" asp-action="Profile" asp-route-id="@User.FindFirstValue(ClaimTypes.NameIdentifier)">Profile</a>
+                        <a class="nav__link" asp-controller="Authorization" asp-action="Logout">Logout</a>
+                    </div>
+                </div>
             }
             else
             {
-                <a class="nav__link" asp-controller="Authorization" asp-action="Login">Login</a>
-                <a class="nav__link" asp-controller="Authorization" asp-action="Register">Register</a>
+                <div class="dropdown">
+                    <button class="dropbtn" id="dropbtn">Authorization</button>
+                    <div class="dropdown-content">
+                        <a asp-controller="Authorization" asp-action="Login">Login</a>
+                        <a asp-controller="Authorization" asp-action="Register">Register</a>
+                    </div>
+                </div>
             }
         </div>
-
     </nav>
 
 </header>
@@ -34,6 +43,16 @@
 {
     <script>
         $(function () {
+
+            var dropbtn = document.getElementById('dropbtn');
+            var dropdownContent = document.querySelector('.dropdown-content');
+
+            dropbtn.addEventListener('click', function () {
+                dropdownContent.style.display = (dropdownContent.style.display === 'block') ? 'none' : 'block';
+                dropbtn.style.color = (dropbtn.style.color === 'black') ? 'white' : 'black';
+                dropbtn.style.backgroundColor = (dropbtn.style.backgroundColor === 'white') ? 'black' : 'white';
+            });
+          
             $("#search").on("input", function () {
                 var inputTag = $(this).val().trim();
                 if (inputTag !== "") {
