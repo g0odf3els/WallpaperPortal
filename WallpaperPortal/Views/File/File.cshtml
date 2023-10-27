@@ -19,9 +19,9 @@
 
         <div class="file-info pt-5 px-10">
 
-            <div class="file-resolution mt-10">
+            <a class="file-resolution mt-10" asp-controller="File" asp-action="Files" asp-route-resolutions="@(Model.File.Width + "x" + Model.File.Height)">
                 @Model.File.Width x @Model.File.Height
-            </div>
+            </a>
 
             <div class="sub-file-info">
                 <div>
@@ -95,7 +95,7 @@
     </div>
 
     <div class="image-box">
-        <img class="image-box__img" 
+        <img class="image-box__img"
              src="@Model.File.Path"
              alt="Download @string.Join(", ", Model.File.Tags.Select(t => t.Name)) @Model.File.Width x @Model.File.Height wallpaper for free">
     </div>
@@ -108,9 +108,9 @@
                 {
                     <div class="file-gallery__container">
                         <a asp-action="File" asp-controller="File" asp-route-id="@file.Id">
-                            <img class="container file-gallery__img" 
-                            src="@file.PreviewPath" 
-                            alt="Download @string.Join(", ", @file.Tags.Select(t => t.Name)) @Model.File.Width x @Model.File.Height wallpaper for free">
+                            <img class="container file-gallery__img"
+                                 src="@file.PreviewPath"
+                                 alt="Download @string.Join(", ", @file.Tags.Select(t => t.Name)) @Model.File.Width x @Model.File.Height wallpaper for free">
                         </a>
                         <div class="file-gallery__conainer-overlay">
                             @file.Width x @file.Height

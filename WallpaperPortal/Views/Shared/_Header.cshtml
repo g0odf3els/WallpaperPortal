@@ -12,20 +12,76 @@
             <button style="border-color: white" class="animated-btn" type="submit">Search</button>
         </form>
 
+        <div class="search-params">
+
+            <div class="dropdown">
+                <button class="dropbtn" id="dropbtn">Resolution</button>
+                <div class="dropdown-content">
+                    <div class="resolution-table">
+                        <div class="resolution-option" data-value="3840x2400">3840x2400</div>
+                        <div class="resolution-option" data-value="3840x2160">3840x2160</div>
+                        <div class="resolution-option" data-value="2560x1600">2560x1600</div>
+                        <div class="resolution-option" data-value="2560x1440">2560x1440</div>
+                        <div class="resolution-option" data-value="2560x1080">2560x1080</div>
+                        <div class="resolution-option" data-value="2560x1024">2560x1024</div>
+                        <div class="resolution-option" data-value="2048x1152">2048x1152</div>
+                        <div class="resolution-option" data-value="1920x1200">1920x1200</div>
+                        <div class="resolution-option" data-value="1920x1080">1920x1080</div>
+                        <div class="resolution-option" data-value="1680x1050">1680x1050</div>
+                        <div class="resolution-option" data-value="1600x900">1600x900</div>
+                        <div class="resolution-option" data-value="1440x900">1440x900</div>
+                        <div class="resolution-option" data-value="1280x800">1280x800</div>
+                        <div class="resolution-option" data-value="1280x720">1280x720</div>
+                        <div class="resolution-option" data-value="1600x1200">1600x1200</div>
+                        <div class="resolution-option" data-value="1400x1050">1400x1050</div>
+                        <div class="resolution-option" data-value="1280x1024">1280x1024</div>
+                        <div class="resolution-option" data-value="1280x960">1280x960</div>
+                        <div class="resolution-option" data-value="1152x864">1152x864</div>
+                        <div class="resolution-option" data-value="1024x768">1024x768</div>
+                        <div class="resolution-option" data-value="2160x3840">2160x3840</div>
+                        <div class="resolution-option" data-value="1440x2560">1440x2560</div>
+                        <div class="resolution-option" data-value="1366x768">1366x768</div>
+                        <div class="resolution-option" data-value="1080x1920">1080x1920</div>
+                        <div class="resolution-option" data-value="1024x600">1024x600</div>
+                        <div class="resolution-option" data-value="960x544">960x544</div>
+                        <div class="resolution-option" data-value="800x1280">800x1280</div>
+                        <div class="resolution-option" data-value="800x600">800x600</div>
+                        <div class="resolution-option" data-value="720x1280">720x1280</div>
+                    </div>
+
+                    <div class="custom-resolution">
+                        <input type="text" id="customResolutionWidth" placeholder="Width">
+                        <label>x</label>
+                        <input type="text" id="customResolutionHeight" placeholder="Height">
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
         <div class="nav_auth-container">
             @if (User.Identity.IsAuthenticated)
             {
-                <a class="nav__link" asp-controller="File" asp-action="Upload">Upload</a>
-                <a class="nav__link" asp-controller="Users" asp-action="Profile" asp-route-id="@User.FindFirstValue(ClaimTypes.NameIdentifier)">@User.Identity.Name</a>
-                <a class="nav__link" asp-controller="Authorization" asp-action="Logout">Logout</a>
+                <div class="dropdown">
+                    <button class="dropbtn" id="dropbtn">@User.Identity.Name</button>
+                    <div class="dropdown-content">
+                        <a class="nav__link" asp-controller="File" asp-action="Upload">Upload</a>
+                        <a class="nav__link" asp-controller="Users" asp-action="Profile" asp-route-id="@User.FindFirstValue(ClaimTypes.NameIdentifier)">Profile</a>
+                        <a class="nav__link" asp-controller="Authorization" asp-action="Logout">Logout</a>
+                    </div>
+                </div>
             }
             else
             {
-                <a class="nav__link" asp-controller="Authorization" asp-action="Login">Login</a>
-                <a class="nav__link" asp-controller="Authorization" asp-action="Register">Register</a>
+                <div class="dropdown">
+                    <button class="dropbtn" id="dropbtn">Authorization</button>
+                    <div class="dropdown-content">
+                        <a asp-controller="Authorization" asp-action="Login">Login</a>
+                        <a asp-controller="Authorization" asp-action="Register">Register</a>
+                    </div>
+                </div>
             }
         </div>
-
     </nav>
 
 </header>
@@ -34,6 +90,41 @@
 {
     <script>
         $(function () {
+
+            var urlParams = new URLSearchParams(window.location.search);
+            var resolutionsParam = urlParams.get('resolutions');
+            var tagParam = urlParams.get('tag');
+
+            if (resolutionsParam) {
+                var selectedResolutions = resolutionsParam.split(',');
+
+                selectedResolutions.forEach(function (resolution) {
+                    $('.resolution-option[data-value="' + resolution + '"]').addClass('selected');
+                });
+            }
+
+            if (tagParam) {
+                $('#search').val(tagParam);
+            }
+
+            var dropbtns = document.querySelectorAll('.dropbtn');
+            var dropdownContents = document.querySelectorAll('.dropdown-content');
+
+            dropbtns.forEach(function (dropbtn, index) {
+                dropbtn.addEventListener('click', function () {
+                    var dropdownContent = dropdownContents[index];
+
+                    dropdownContent.style.display = (dropdownContent.style.display === 'block') ? 'none' : 'block';
+                    dropbtn.style.color = (dropbtn.style.color === 'black') ? 'white' : 'black';
+                    dropbtn.style.backgroundColor = (dropbtn.style.backgroundColor === 'white') ? 'black' : 'white';
+                });
+            });
+
+
+            $('.resolution-option').click(function () {
+                $(this).toggleClass('selected');
+            });
+
             $("#search").on("input", function () {
                 var inputTag = $(this).val().trim();
                 if (inputTag !== "") {
@@ -56,6 +147,30 @@
                     });
                 }
             });
+
+            $('form.searchbar-form').submit(function (e) {
+                e.preventDefault();
+
+                var selectedResolutions = $('.resolution-option.selected').map(function () {
+                    return $(this).data('value');
+                }).get();
+
+                var customWidth = $('#customResolutionWidth').val().trim();
+                var customHeight = $('#customResolutionHeight').val().trim();
+
+                if (customWidth && customHeight) {
+                    selectedResolutions.push(customWidth + 'x' + customHeight);
+                }
+
+                if (selectedResolutions.length > 0) {
+                    $('<input />').attr('type', 'hidden')
+                        .attr('name', 'resolutions')
+                        .attr('value', selectedResolutions)
+                        .appendTo('form.searchbar-form');
+                }
+                this.submit();
+            });
+
         });
     </script>
 }
