@@ -1,4 +1,5 @@
-﻿@model WallpaperPortal.ViewModels.FilesViewModel
+﻿@using WallpaperPortal.Helpers;
+@model WallpaperPortal.ViewModels.FilesViewModel
 
 @{
     ViewData["Title"] = $"Download {string.Join(", ", Model.FilesQuery.Tag)} wallpaper for free";
@@ -15,48 +16,7 @@
     @await Html.PartialAsync("_FileGallery", Model.PagedList.Items)
 
     <div class="pagination-container">
-        <ul class="pagination">
-            @if (Model.PagedList.TotalPages > 1)
-            {
-                @if (Model.PagedList.PageNumber != 1)
-                {
-                    <li>
-                        <a asp-action="Files" asp-controller="File" asp-route-page="@(Model.PagedList.PageNumber - 1)">
-                            <span class="material-symbols-outlined">navigate_before</span>
-                        </a>
-                    </li>
-                }
-
-                @for (var i = Math.Max(1, Model.PagedList.PageNumber - 2); i <= Math.Min(Model.PagedList.TotalPages, Model.PagedList.PageNumber + 2); i++)
-                {
-                    if (i == Model.PagedList.PageNumber)
-                    {
-                        <li class="active">
-                            <a>
-                                @i
-                            </a>
-                        </li>
-                    }
-                    else
-                    {
-                        <li>
-                            <a asp-action="Files" asp-controller="File" asp-route-page="@i">
-                                @i
-                            </a>
-                        </li>
-                    }
-                }
-
-                @if (Model.PagedList.PageNumber != Model.PagedList.TotalPages)
-                {
-                    <li>
-                        <a asp-action="Files" asp-controller="File" asp-route-page="@(Model.PagedList.PageNumber + 1)">
-                            <span class="material-symbols-outlined">navigate_next</span>
-                        </a>
-                    </li>
-                }
-            }
-        </ul>
+        @Html.PaginationLinks(Model.PagedList)
     </div>
 
 </div>

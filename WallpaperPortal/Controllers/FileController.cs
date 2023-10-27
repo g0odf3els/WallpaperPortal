@@ -7,7 +7,7 @@ using WallpaperPortal.Persistance;
 using ImageMagick;
 using WallpaperPortal.Queries;
 using System.Linq.Expressions;
-using static System.Net.Mime.MediaTypeNames;
+using System.Text.RegularExpressions;
 
 namespace Dreamscape.Controllers
 {
@@ -41,17 +41,42 @@ namespace Dreamscape.Controllers
 
                 if (!string.IsNullOrEmpty(query.Tag))
                 {
-                    expressions = expressions.Append(f => f.Tags.Any(t => t.Name == query.Tag)).ToArray();
+                    expressions = expressions.Append(f => f.Tags.ToList().Any(t => t.Name == query.Tag)).ToArray();
                 }
 
-                if (!string.IsNullOrEmpty(query.Width))
-                {
-                    expressions = expressions.Append(f => f.Width.ToString() == query.Width).ToArray();
-                }
+                var f = Expression.Parameter(typeof(File), "f");
 
-                if (!string.IsNullOrEmpty(query.Height))
+                if (query.Resolutions != null)
                 {
-                    expressions = expressions.Append(f => f.Height.ToString() == query.Height).ToArray();
+                    List<(int, int)> resolutions = ParseResolutions(query.Resolutions);
+
+                    var widthParameter = Expression.PropertyOrField(f, "Width");
+                    var heightParameter = Expression.PropertyOrField(f, "Height");
+
+                    Expression finalExpression = null;
+
+                    foreach (var resolution in resolutions)
+                    {
+                        var widthEquals = Expression.Equal(widthParameter, Expression.Constant(resolution.Item1));
+                        var heightEquals = Expression.Equal(heightParameter, Expression.Constant(resolution.Item2));
+
+                        var andExpression = Expression.And(widthEquals, heightEquals);
+
+                        if (finalExpression == null)
+                        {
+                            finalExpression = andExpression;
+                        }
+                        else
+                        {
+                            finalExpression = Expression.Or(finalExpression, andExpression);
+                        }
+                    }
+
+                    if (finalExpression != null)
+                    {
+                        var lambda = Expression.Lambda<Func<File, bool>>(finalExpression, f);
+                        expressions = expressions.Append(lambda).ToArray();
+                    }
                 }
 
                 var result = _unitOfWork.FileRepository.GetPaged(page, pageSize, new[] { "Tags" }, expressions);
@@ -145,6 +170,7 @@ namespace Dreamscape.Controllers
             try
             {
                 var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
                 var fileId = Guid.NewGuid().ToString();
 
                 var filePath = $"/Uploads/Files/{fileId}{Path.GetExtension(upload.FileName)}";
@@ -175,6 +201,7 @@ namespace Dreamscape.Controllers
                 AddTagsToFile(file, tagsList?.Split(',').ToList());
 
                 _unitOfWork.FileRepository.Create(file);
+
                 _unitOfWork.Save();
 
                 return RedirectToAction("Files", "File");
@@ -385,6 +412,22 @@ namespace Dreamscape.Controllers
 
                 file.Tags.Add(Tag);
             }
+        }
+
+        private static List<(int, int)> ParseResolutions(string input)
+        {
+            List<(int, int)> resolutions = new List<(int, int)>();
+            string pattern = @"(\d+)x(\d+)";
+
+            MatchCollection matches = Regex.Matches(input, pattern);
+            foreach (Match match in matches)
+            {
+                int width = int.Parse(match.Groups[1].Value);
+                int height = int.Parse(match.Groups[2].Value);
+                resolutions.Add((width, height));
+            }
+
+            return resolutions;
         }
 
     }
