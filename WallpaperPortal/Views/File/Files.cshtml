@@ -15,8 +15,10 @@
 
     @await Html.PartialAsync("_FileGallery", Model.PagedList.Items)
 
-    <div class="pagination-container">
-        @Html.PaginationLinks(Model.PagedList)
-    </div>
-
+    @if (Model.PagedList.TotalPages > 1)
+    {
+        <div class="pagination-container">
+            @Html.PaginationLinks(Model.PagedList)
+        </div>
+    }
 </div>

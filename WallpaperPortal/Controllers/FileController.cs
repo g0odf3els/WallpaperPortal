@@ -398,14 +398,14 @@ namespace Dreamscape.Controllers
 
             foreach (var tagName in tags)
             {
-                var Tag = _unitOfWork.TagRepository.FindFirstByCondition(tag => tag.Name == tagName);
+                var Tag = _unitOfWork.TagRepository.FindFirstByCondition(tag => tag.Name == tagName.ToLower());
 
                 if (Tag == null)
                 {
                     Tag = new Tag()
                     {
                         Id = Guid.NewGuid().ToString(),
-                        Name = tagName
+                        Name = tagName.ToLower()
                     };
                     _unitOfWork.TagRepository.Create(Tag);
                 }
