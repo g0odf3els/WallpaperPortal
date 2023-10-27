@@ -1,4 +1,5 @@
 ﻿@using System.Security.Claims;
+@using WallpaperPortal.Helpers;
 @model WallpaperPortal.ViewModels.ProfileViewModel
 @{
     ViewData["Title"] = Model.User.UserName;
@@ -33,48 +34,7 @@
         {
             @await Html.PartialAsync("_FileGallery", Model.UploadedFiles.Items)
             <div class="pagination-container">
-                <ul class="pagination">
-                    @if (Model.UploadedFiles.TotalPages > 1)
-                    {
-                        @if (Model.UploadedFiles.PageNumber != 1)
-                        {
-                            <li>
-                                <a asp-action="Profile" asp-controller="Users" asp-route-id="@Model.User.Id" asp-route-page="@(Model.UploadedFiles.PageNumber - 1)">
-                                    <span class="material-symbols-outlined">navigate_before</span>
-                                </a>
-                            </li>
-                        }
-
-                        @for (var i = Math.Max(1, Model.UploadedFiles.PageNumber - 2); i <= Math.Min(Model.UploadedFiles.TotalPages, Model.UploadedFiles.PageNumber + 2); i++)
-                        {
-                            if (i == Model.UploadedFiles.PageNumber)
-                            {
-                                <li class="active">
-                                    <a>
-                                        @i
-                                    </a>
-                                </li>
-                            }
-                            else
-                            {
-                                <li>
-                                    <a asp-action="Profile" asp-controller="Users" asp-route-id="@Model.User.Id" asp-route-page="@i">
-                                        @i
-                                    </a>
-                                </li>
-                            }
-                        }
-
-                        @if (Model.UploadedFiles.PageNumber != Model.UploadedFiles.TotalPages)
-                        {
-                            <li>
-                                <a asp-action="Profile" asp-controller="Users" asp-route-id="@Model.User.Id" asp-route-page="@(Model.UploadedFiles.PageNumber + 1)">
-                                    <span class="material-symbols-outlined">navigate_next</span>
-                                </a>
-                            </li>
-                        }
-                    }
-                </ul>
+                @Html.PaginationLinks(Model.UploadedFiles)
             </div>
         }
         else
