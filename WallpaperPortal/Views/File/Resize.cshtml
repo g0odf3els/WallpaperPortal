@@ -1,0 +1,108 @@
+﻿@model WallpaperPortal.Models.File;
+
+<head>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+</head>
+
+<div class="resize">
+
+    <div class="image-editor">
+        <img id="image" src="@Model.Path">
+    </div>
+
+    <div class="resize_buttons">
+        <button id="download-btn" class="animated-btn">
+            <span class="material-symbols-outlined">download</span>
+        </button>
+
+        <button id="zoom-in-btn" class="animated-btn">
+            <span class="material-symbols-outlined">zoom_in</span>
+        </button>
+
+        <button id="zoom-out-btn" class="animated-btn">
+            <span class="material-symbols-outlined">zoom_out</span>
+        </button>
+
+        <button id="rotate-left-btn" class="animated-btn">
+            <span class="material-symbols-outlined">rotate_left</span>
+        </button>
+
+        <button id="rotate-right-btn" class="animated-btn">
+            <span class="material-symbols-outlined">rotate_right</span>
+        </button>
+
+        <button id="reset-crop-btn" class="animated-btn">
+            <span class="material-symbols-outlined">restart_alt</span>
+        </button>
+
+        <button id="flip-horizontal-btn" class="animated-btn">
+            <span class="material-symbols-outlined">swap_vert</span>
+        </button>
+
+        <button id="flip-vertical-btn" class="animated-btn">
+            <span class="material-symbols-outlined">swap_horiz</span>
+        </button>
+
+    </div>
+</div>
+
+
+@section Scripts {
+    <script>
+        $(function () {
+            var image = document.getElementById('image');
+            var cropper = new Cropper(image, {
+                viewMode: 2, 
+                autoCropArea: 0.8,
+                crop: function (event) {
+
+                },
+            });
+
+            $('#zoom-in-btn').on('click', function () {
+                cropper.zoom(0.1);
+            });
+
+            $('#zoom-out-btn').on('click', function () {
+                cropper.zoom(-0.1);
+            });
+
+            $('#rotate-left-btn').on('click', function () {
+                cropper.rotate(-90);
+            });
+
+            $('#rotate-right-btn').on('click', function () {
+                cropper.rotate(90);
+            });
+
+            $('#reset-crop-btn').on('click', function () {
+                cropper.reset();
+            });
+
+            $('#flip-horizontal-btn').on('click', function () {
+                cropper.scaleX(-cropper.getData().scaleX || -1);
+            });
+
+            $('#flip-vertical-btn').on('click', function () {
+                cropper.scaleY(-cropper.getData().scaleY || -1);
+            });
+
+
+            $('#download-btn').on('click', function () {
+                var croppedCanvas = cropper.getCroppedCanvas();
+
+                var croppedDataUrl = croppedCanvas.toDataURL();
+
+                var downloadLink = document.createElement('a');
+                downloadLink.href = croppedDataUrl;
+                downloadLink.download = '@Model.Name';
+
+                document.body.appendChild(downloadLink);
+                downloadLink.click();
+
+                document.body.removeChild(downloadLink);
+            });
+        });
+    </script>
+}
