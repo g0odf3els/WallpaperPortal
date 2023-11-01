@@ -5,11 +5,20 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
 </head>
 
+@section metatags {
+    <meta name="robots" content="noindex">
+}
+
 <div class="resize">
 
     <div class="image-editor">
         <img id="image" src="@Model.Path">
     </div>
+
+    @using System.Security.Claims;
+    @{
+        ViewData["Title"] = $"Resize {Model.Name}";
+    }
 
     <div class="resize_buttons">
         <button id="download-btn" class="animated-btn">
@@ -67,9 +76,7 @@
             var cropper = new Cropper(image, {
                 viewMode: 2,
                 autoCropArea: 0.8,
-                crop: function (event) {
-
-                },
+                aspectRatio: 1
             });
 
             $('#zoom-in-btn').on('click', function () {
