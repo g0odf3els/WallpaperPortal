@@ -656,7 +656,10 @@ body {
     .resize_buttons button {
         height: 40px;
         width: fit-content;
-        margin: 2.5px;
+    }
+
+    .resize_buttons button, select {
+        margin: 2px 2.5px;
     }
 
     .resize_buttons span {
@@ -677,4 +680,5 @@ body {
         position: absolute;
         top: 0;
     }
+
 /*--------------------*/

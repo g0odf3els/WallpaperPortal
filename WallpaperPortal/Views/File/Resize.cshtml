@@ -16,6 +16,16 @@
             <span class="material-symbols-outlined">download</span>
         </button>
 
+        <select id="aspect-ratio-select">
+            <option value="1">1:1</option>
+            <option value="3/2">3:2</option>
+            <option value="4/3">4:3</option>
+            <option value="5/4">5:4</option>
+            <option value="16/9">16:9</option>
+            <option value="16/10">16:10</option>
+            <option value="9/16">9:16</option>
+        </select>
+
         <button id="zoom-in-btn" class="animated-btn">
             <span class="material-symbols-outlined">zoom_in</span>
         </button>
@@ -52,8 +62,10 @@
     <script>
         $(function () {
             var image = document.getElementById('image');
+            var aspectRatioSelect = document.getElementById('aspect-ratio-select');
+
             var cropper = new Cropper(image, {
-                viewMode: 2, 
+                viewMode: 2,
                 autoCropArea: 0.8,
                 crop: function (event) {
 
@@ -88,6 +100,11 @@
                 cropper.scaleY(-cropper.getData().scaleY || -1);
             });
 
+            aspectRatioSelect.addEventListener('change', function () {
+                var selectedAspectRatio = aspectRatioSelect.value;
+
+                cropper.setAspectRatio(eval(selectedAspectRatio));
+            });
 
             $('#download-btn').on('click', function () {
                 var croppedCanvas = cropper.getCroppedCanvas();
