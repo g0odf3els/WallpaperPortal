@@ -364,6 +364,32 @@ namespace Dreamscape.Controllers
             }
         }
 
+        public IActionResult Resize(string id)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(id))
+                {
+                    return BadRequest();
+                }
+
+                var file = _unitOfWork.FileRepository.FindFirstByCondition(file => file.Id == id);
+
+                if (file != null)
+                {
+                    return View(file);
+                }
+
+                return NotFound();
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return BadRequest();
+            }
+        }
+
         private void CreatePreviewForFile(File file)
         {
             using (MagickImage image = new MagickImage($"wwwroot/{file.Path}"))

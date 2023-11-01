@@ -43,6 +43,15 @@
             </button>
         </form>
 
+        <form class="pt-5 px-10" method="get" asp-action="Resize" asp-controller="File" asp-route-id="@Model.File.Id">
+            <button class="animated-btn" type="submit">
+                <div class="flex-row justify-content-space-between align-items-center">
+                    <span>Resize</span>
+                    <span class="material-symbols-outlined">aspect_ratio</span>
+                </div>
+            </button>
+        </form>
+
         @if (@Model.File.UserId == @User.FindFirstValue(ClaimTypes.NameIdentifier) || @User.IsInRole("Admin"))
         {
             <form class="pt-5 px-10" method="post" asp-action="Delete" asp-controller="File" asp-route-id="@Model.File.Id" enctype="multipart/form-data">
@@ -92,11 +101,11 @@
                 </div>
             }
         </div>
+
     </div>
 
     <div class="image-box">
-        <img class="image-box__img"
-             src="@Model.File.Path"
+        <img src="@Model.File.Path"
              alt="Download @string.Join(", ", Model.File.Tags.Select(t => t.Name)) @Model.File.Width x @Model.File.Height wallpaper for free">
     </div>
 
