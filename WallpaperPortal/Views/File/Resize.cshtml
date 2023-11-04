@@ -1,0 +1,132 @@
+﻿@model WallpaperPortal.Models.File;
+
+<head>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+</head>
+
+@section metatags {
+    <meta name="robots" content="noindex">
+}
+
+<div class="resize">
+
+    <div class="image-editor">
+        <img id="image" src="@Model.Path">
+    </div>
+
+    @using System.Security.Claims;
+    @{
+        ViewData["Title"] = $"Resize {Model.Name}";
+    }
+
+    <div class="resize_buttons">
+        <button id="download-btn" class="animated-btn">
+            <span class="material-symbols-outlined">download</span>
+        </button>
+
+        <select id="aspect-ratio-select">
+            <option value="1">1:1</option>
+            <option value="3/2">3:2</option>
+            <option value="4/3">4:3</option>
+            <option value="5/4">5:4</option>
+            <option value="16/9">16:9</option>
+            <option value="16/10">16:10</option>
+            <option value="9/16">9:16</option>
+        </select>
+
+        <button id="zoom-in-btn" class="animated-btn">
+            <span class="material-symbols-outlined">zoom_in</span>
+        </button>
+
+        <button id="zoom-out-btn" class="animated-btn">
+            <span class="material-symbols-outlined">zoom_out</span>
+        </button>
+
+        <button id="rotate-left-btn" class="animated-btn">
+            <span class="material-symbols-outlined">rotate_left</span>
+        </button>
+
+        <button id="rotate-right-btn" class="animated-btn">
+            <span class="material-symbols-outlined">rotate_right</span>
+        </button>
+
+        <button id="reset-crop-btn" class="animated-btn">
+            <span class="material-symbols-outlined">restart_alt</span>
+        </button>
+
+        <button id="flip-horizontal-btn" class="animated-btn">
+            <span class="material-symbols-outlined">swap_vert</span>
+        </button>
+
+        <button id="flip-vertical-btn" class="animated-btn">
+            <span class="material-symbols-outlined">swap_horiz</span>
+        </button>
+
+    </div>
+</div>
+
+
+@section Scripts {
+    <script>
+        $(function () {
+            var image = document.getElementById('image');
+            var aspectRatioSelect = document.getElementById('aspect-ratio-select');
+
+            var cropper = new Cropper(image, {
+                viewMode: 2,
+                autoCropArea: 0.8,
+                aspectRatio: 1
+            });
+
+            $('#zoom-in-btn').on('click', function () {
+                cropper.zoom(0.1);
+            });
+
+            $('#zoom-out-btn').on('click', function () {
+                cropper.zoom(-0.1);
+            });
+
+            $('#rotate-left-btn').on('click', function () {
+                cropper.rotate(-90);
+            });
+
+            $('#rotate-right-btn').on('click', function () {
+                cropper.rotate(90);
+            });
+
+            $('#reset-crop-btn').on('click', function () {
+                cropper.reset();
+            });
+
+            $('#flip-horizontal-btn').on('click', function () {
+                cropper.scaleX(-cropper.getData().scaleX || -1);
+            });
+
+            $('#flip-vertical-btn').on('click', function () {
+                cropper.scaleY(-cropper.getData().scaleY || -1);
+            });
+
+            aspectRatioSelect.addEventListener('change', function () {
+                var selectedAspectRatio = aspectRatioSelect.value;
+
+                cropper.setAspectRatio(eval(selectedAspectRatio));
+            });
+
+            $('#download-btn').on('click', function () {
+                var croppedCanvas = cropper.getCroppedCanvas();
+
+                var croppedDataUrl = croppedCanvas.toDataURL();
+
+                var downloadLink = document.createElement('a');
+                downloadLink.href = croppedDataUrl;
+                downloadLink.download = '@Model.Name';
+
+                document.body.appendChild(downloadLink);
+                downloadLink.click();
+
+                document.body.removeChild(downloadLink);
+            });
+        });
+    </script>
+}

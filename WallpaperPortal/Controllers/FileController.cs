@@ -364,6 +364,32 @@ namespace Dreamscape.Controllers
             }
         }
 
+        public IActionResult Resize(string id)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(id))
+                {
+                    return BadRequest();
+                }
+
+                var file = _unitOfWork.FileRepository.FindFirstByCondition(file => file.Id == id);
+
+                if (file != null)
+                {
+                    return View(file);
+                }
+
+                return NotFound();
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return BadRequest();
+            }
+        }
+
         private void CreatePreviewForFile(File file)
         {
             using (MagickImage image = new MagickImage($"wwwroot/{file.Path}"))
@@ -398,14 +424,14 @@ namespace Dreamscape.Controllers
 
             foreach (var tagName in tags)
             {
-                var Tag = _unitOfWork.TagRepository.FindFirstByCondition(tag => tag.Name == tagName);
+                var Tag = _unitOfWork.TagRepository.FindFirstByCondition(tag => tag.Name == tagName.ToLower());
 
                 if (Tag == null)
                 {
                     Tag = new Tag()
                     {
                         Id = Guid.NewGuid().ToString(),
-                        Name = tagName
+                        Name = tagName.ToLower()
                     };
                     _unitOfWork.TagRepository.Create(Tag);
                 }
