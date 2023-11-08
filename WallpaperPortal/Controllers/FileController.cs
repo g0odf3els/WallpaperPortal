@@ -48,7 +48,7 @@ namespace Dreamscape.Controllers
 
                 if (query.Resolutions != null)
                 {
-                    List<(int, int)> resolutions = ParseResolutions(query.Resolutions);
+                    List<(int, int)> resolutions = ParsePairs(query.Resolutions);
 
                     var widthParameter = Expression.PropertyOrField(f, "Width");
                     var heightParameter = Expression.PropertyOrField(f, "Height");
@@ -78,6 +78,36 @@ namespace Dreamscape.Controllers
                         expressions = expressions.Append(lambda).ToArray();
                     }
                 }
+
+                if (query.AspectRatios != null)
+                {
+                    List<(int, int)> aspectRatios = ParsePairs(query.AspectRatios);
+
+                    Expression finalExpression = null;
+
+                    var widthExpression = Expression.PropertyOrField(f, "Width");
+                    var heightExpression = Expression.PropertyOrField(f, "Height");
+
+                    foreach (var aspect in aspectRatios)
+                    {
+
+                        var aspectEquals = Expression.Equal(
+                                      Expression.Divide(
+                                          Expression.Convert(widthExpression, typeof(double)),
+                                          Expression.Convert(heightExpression, typeof(double))),
+                                      Expression.Constant((double)aspect.Item1 / (double)aspect.Item2));
+
+
+                        finalExpression = finalExpression == null ? aspectEquals : Expression.OrElse(finalExpression, aspectEquals);
+                    }
+
+                    if (finalExpression != null)
+                    {
+                        var lambda = Expression.Lambda<Func<File, bool>>(finalExpression, f);
+                        expressions = expressions.Append(lambda).ToArray();
+                    }
+                }
+
 
                 var result = _unitOfWork.FileRepository.GetPaged(page, pageSize, new[] { "Tags" }, expressions);
 
@@ -440,7 +470,7 @@ namespace Dreamscape.Controllers
             }
         }
 
-        private static List<(int, int)> ParseResolutions(string input)
+        private static List<(int, int)> ParsePairs(string input)
         {
             List<(int, int)> resolutions = new List<(int, int)>();
             string pattern = @"(\d+)x(\d+)";

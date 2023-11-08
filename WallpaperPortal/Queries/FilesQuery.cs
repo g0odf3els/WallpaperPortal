@@ -8,6 +8,7 @@ namespace WallpaperPortal.Queries
 		public string? Width { get; set; }
 		public string? Height { get; set; }
 		public string? Resolutions { get; set; }
+		public string? AspectRatios { get; set; }
 
     }
 }
