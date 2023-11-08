@@ -17,42 +17,62 @@
             <div class="dropdown">
                 <button class="dropbtn" id="dropbtn">Resolution</button>
                 <div class="dropdown-content">
-                    <div class="resolution-table">
-                        <div class="resolution-option" data-value="3840x2400">3840x2400</div>
-                        <div class="resolution-option" data-value="3840x2160">3840x2160</div>
-                        <div class="resolution-option" data-value="2560x1600">2560x1600</div>
-                        <div class="resolution-option" data-value="2560x1440">2560x1440</div>
-                        <div class="resolution-option" data-value="2560x1080">2560x1080</div>
-                        <div class="resolution-option" data-value="2560x1024">2560x1024</div>
-                        <div class="resolution-option" data-value="2048x1152">2048x1152</div>
-                        <div class="resolution-option" data-value="1920x1200">1920x1200</div>
-                        <div class="resolution-option" data-value="1920x1080">1920x1080</div>
-                        <div class="resolution-option" data-value="1680x1050">1680x1050</div>
-                        <div class="resolution-option" data-value="1600x900">1600x900</div>
-                        <div class="resolution-option" data-value="1440x900">1440x900</div>
-                        <div class="resolution-option" data-value="1280x800">1280x800</div>
-                        <div class="resolution-option" data-value="1280x720">1280x720</div>
-                        <div class="resolution-option" data-value="1600x1200">1600x1200</div>
-                        <div class="resolution-option" data-value="1400x1050">1400x1050</div>
-                        <div class="resolution-option" data-value="1280x1024">1280x1024</div>
-                        <div class="resolution-option" data-value="1280x960">1280x960</div>
-                        <div class="resolution-option" data-value="1152x864">1152x864</div>
-                        <div class="resolution-option" data-value="1024x768">1024x768</div>
-                        <div class="resolution-option" data-value="2160x3840">2160x3840</div>
-                        <div class="resolution-option" data-value="1440x2560">1440x2560</div>
-                        <div class="resolution-option" data-value="1366x768">1366x768</div>
-                        <div class="resolution-option" data-value="1080x1920">1080x1920</div>
-                        <div class="resolution-option" data-value="1024x600">1024x600</div>
-                        <div class="resolution-option" data-value="960x544">960x544</div>
-                        <div class="resolution-option" data-value="800x1280">800x1280</div>
-                        <div class="resolution-option" data-value="800x600">800x600</div>
-                        <div class="resolution-option" data-value="720x1280">720x1280</div>
+                    <div class="params-table">
+                        <div class="params-table_option resolution-option" data-value="3840x2400">3840x2400</div>
+                        <div class="params-table_option resolution-option" data-value="3840x2160">3840x2160</div>
+                        <div class="params-table_option resolution-option" data-value="2560x1600">2560x1600</div>
+                        <div class="params-table_option resolution-option" data-value="2560x1440">2560x1440</div>
+                        <div class="params-table_option resolution-option" data-value="2560x1080">2560x1080</div>
+                        <div class="params-table_option resolution-option" data-value="2560x1024">2560x1024</div>
+                        <div class="params-table_option resolution-option" data-value="2048x1152">2048x1152</div>
+                        <div class="params-table_option resolution-option" data-value="1920x1200">1920x1200</div>
+                        <div class="params-table_option resolution-option" data-value="1920x1080">1920x1080</div>
+                        <div class="params-table_option resolution-option" data-value="1680x1050">1680x1050</div>
+                        <div class="params-table_option resolution-option" data-value="1600x900">1600x900</div>
+                        <div class="params-table_option resolution-option" data-value="1440x900">1440x900</div>
+                        <div class="params-table_option resolution-option" data-value="1280x800">1280x800</div>
+                        <div class="params-table_option resolution-option" data-value="1280x720">1280x720</div>
+                        <div class="params-table_option resolution-option" data-value="1600x1200">1600x1200</div>
+                        <div class="params-table_option resolution-option" data-value="1400x1050">1400x1050</div>
+                        <div class="params-table_option resolution-option" data-value="1280x1024">1280x1024</div>
+                        <div class="params-table_option resolution-option" data-value="1280x960">1280x960</div>
+                        <div class="params-table_option resolution-option" data-value="1152x864">1152x864</div>
+                        <div class="params-table_option resolution-option" data-value="1024x768">1024x768</div>
+                        <div class="params-table_option resolution-option" data-value="2160x3840">2160x3840</div>
+                        <div class="params-table_option resolution-option" data-value="1440x2560">1440x2560</div>
+                        <div class="params-table_option resolution-option" data-value="1366x768">1366x768</div>
+                        <div class="params-table_option resolution-option" data-value="1080x1920">1080x1920</div>
+                        <div class="params-table_option resolution-option" data-value="1024x600">1024x600</div>
+                        <div class="params-table_option resolution-option" data-value="960x544">960x544</div>
+                        <div class="params-table_option resolution-option" data-value="800x1280">800x1280</div>
+                        <div class="params-table_option resolution-option" data-value="800x600">800x600</div>
+                        <div class="params-table_option resolution-option" data-value="720x1280">720x1280</div>
                     </div>
 
                     <div class="custom-resolution">
                         <input type="text" id="customResolutionWidth" placeholder="Width">
                         <label>x</label>
                         <input type="text" id="customResolutionHeight" placeholder="Height">
+                    </div>
+                </div>
+            </div>
+
+            <div class="dropdown">
+                <button class="dropbtn">Aspect Ratio</button>
+                <div class="dropdown-content">
+                    <div class="params-table">
+                        <div class="params-table_option aspect-ratio-option" data-value="16x9">16:9</div>
+                        <div class="params-table_option aspect-ratio-option" data-value="16x10">16:10</div>
+                        <div class="params-table_option aspect-ratio-option" data-value="21x9">21:9</div>
+                        <div class="params-table_option aspect-ratio-option" data-value="32x9">32:9</div>
+                        <div class="params-table_option aspect-ratio-option" data-value="48x9">48:9</div>
+                        <div class="params-table_option aspect-ratio-option" data-value="9x16">9:16</div>
+                        <div class="params-table_option aspect-ratio-option" data-value="10x16">10:16</div>
+                        <div class="params-table_option aspect-ratio-option" data-value="9x18">9:18</div>
+                        <div class="params-table_option aspect-ratio-option" data-value="1x1">1:1</div>
+                        <div class="params-table_option aspect-ratio-option" data-value="3x2">3:2</div>
+                        <div class="params-table_option aspect-ratio-option" data-value="4x3">4:3</div>
+                        <div class="params-table_option aspect-ratio-option" data-value="5x4">5:4</div>
                     </div>
                 </div>
             </div>
@@ -93,6 +113,7 @@
 
             var urlParams = new URLSearchParams(window.location.search);
             var resolutionsParam = urlParams.get('resolutions');
+            var aspectParam = urlParams.get('aspectRatios');
             var tagParam = urlParams.get('tag');
 
             if (resolutionsParam) {
@@ -100,6 +121,14 @@
 
                 selectedResolutions.forEach(function (resolution) {
                     $('.resolution-option[data-value="' + resolution + '"]').addClass('selected');
+                });
+            }
+
+            if (aspectParam) {
+                var selectedAspectRatios = aspectParam.split(',');
+
+                selectedAspectRatios.forEach(function (aspectRatio) {
+                    $('.aspect-ratio-option[data-value="' + aspectRatio + '"]').addClass('selected');
                 });
             }
 
@@ -121,7 +150,7 @@
             });
 
 
-            $('.resolution-option').click(function () {
+            $('.params-table_option').click(function () {
                 $(this).toggleClass('selected');
             });
 
@@ -155,6 +184,10 @@
                     return $(this).data('value');
                 }).get();
 
+                var selectedAspectRatios = $('.aspect-ratio-option.selected').map(function () {
+                    return $(this).data('value');
+                }).get();
+
                 var customWidth = $('#customResolutionWidth').val().trim();
                 var customHeight = $('#customResolutionHeight').val().trim();
 
@@ -168,6 +201,15 @@
                         .attr('value', selectedResolutions)
                         .appendTo('form.searchbar-form');
                 }
+
+                if (selectedAspectRatios.length > 0) {
+                    $('<input />').attr('type', 'hidden')
+                        .attr('name', 'aspectRatios')
+                        .attr('value', selectedAspectRatios)
+                        .appendTo('form.searchbar-form');
+                }
+
+
                 this.submit();
             });
 
