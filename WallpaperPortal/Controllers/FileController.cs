@@ -35,7 +35,6 @@ namespace Dreamscape.Controllers
         [HttpGet("File")]
         public IActionResult File(string id)
         {
-            throw new Exception();
             var file = _fileService.File(id);
 
             return file == null
