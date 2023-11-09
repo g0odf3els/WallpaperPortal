@@ -26,107 +26,76 @@ namespace Dreamscape.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(string name)
         {
-            try
+
+            if (!string.IsNullOrEmpty(name))
             {
-                if (!string.IsNullOrEmpty(name))
+                IdentityResult result = await _roleManager.CreateAsync(new IdentityRole(name));
+                if (result.Succeeded)
                 {
-                    IdentityResult result = await _roleManager.CreateAsync(new IdentityRole(name));
-                    if (result.Succeeded)
+                    return RedirectToAction("Index");
+                }
+                else
+                {
+                    foreach (var error in result.Errors)
                     {
-                        return RedirectToAction("Index");
-                    }
-                    else
-                    {
-                        foreach (var error in result.Errors)
-                        {
-                            ModelState.AddModelError(string.Empty, error.Description);
-                        }
+                        ModelState.AddModelError(string.Empty, error.Description);
                     }
                 }
-                return View(name);
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.Message);
-                return BadRequest();
-            }
+            return View(name);
         }
 
         [HttpPost]
         public async Task<IActionResult> Delete(string id)
         {
-            try
+            var role = await _roleManager.FindByIdAsync(id);
+            if (role != null)
             {
-                var role = await _roleManager.FindByIdAsync(id);
-                if (role != null)
-                {
-                    IdentityResult result = await _roleManager.DeleteAsync(role);
-                }
-                return RedirectToAction("Index");
+                IdentityResult result = await _roleManager.DeleteAsync(role);
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.Message);
-                return BadRequest();
-            }
+            return RedirectToAction("Index");
         }
 
         public IActionResult UserList() => View(_userManager.Users.ToList());
 
         public async Task<IActionResult> Edit(string id)
         {
-            try
+            User user = await _userManager.FindByIdAsync(id);
+            if (user != null)
             {
-                User user = await _userManager.FindByIdAsync(id);
-                if (user != null)
+                var userRoles = await _userManager.GetRolesAsync(user);
+                var allRoles = _roleManager.Roles.ToList();
+                ChangeRoleViewModel model = new ChangeRoleViewModel
                 {
-                    var userRoles = await _userManager.GetRolesAsync(user);
-                    var allRoles = _roleManager.Roles.ToList();
-                    ChangeRoleViewModel model = new ChangeRoleViewModel
-                    {
-                        UserId = user.Id,
-                        UserEmail = user.Email,
-                        UserRoles = userRoles,
-                        AllRoles = allRoles
-                    };
-                    return View(model);
-                }
-                return NotFound();
+                    UserId = user.Id,
+                    UserEmail = user.Email,
+                    UserRoles = userRoles,
+                    AllRoles = allRoles
+                };
+                return View(model);
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.Message);
-                return BadRequest();
-            }
+            return NotFound();
         }
 
         [HttpPost]
         public async Task<IActionResult> Edit(string Id, List<string> roles)
         {
-            try
+            User user = await _userManager.FindByIdAsync(Id);
+
+            if (user == null)
             {
-                User user = await _userManager.FindByIdAsync(Id);
-                if (user != null)
-                {
-                    var userRoles = await _userManager.GetRolesAsync(user);
-                    var allRoles = _roleManager.Roles.ToList();
-                    var addedRoles = roles.Except(userRoles);
-                    var removedRoles = userRoles.Except(roles);
-
-                    await _userManager.AddToRolesAsync(user, addedRoles);
-
-                    await _userManager.RemoveFromRolesAsync(user, removedRoles);
-
-                    return RedirectToAction("Index", "Users");
-                }
                 return NotFound();
+            }
 
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.Message);
-                return BadRequest();
-            }
+            var userRoles = await _userManager.GetRolesAsync(user);
+            var addedRoles = roles.Except(userRoles);
+            var removedRoles = userRoles.Except(roles);
+
+            await _userManager.AddToRolesAsync(user, addedRoles);
+
+            await _userManager.RemoveFromRolesAsync(user, removedRoles);
+
+            return RedirectToAction("Index", "Users");
         }
     }
 }

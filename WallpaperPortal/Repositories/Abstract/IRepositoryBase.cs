@@ -8,7 +8,7 @@ namespace WallpaperPortal.Repositories.Abstract
         T? FindFirstByCondition(Expression<Func<T, bool>> expression, string[]? include = null);
         IQueryable<T> FindAllByCondition(Expression<Func<T, bool>> expression);
         PagedList<T> GetPaged(int pageNumber, int pageSize, string[]? include = null, params Expression<Func<T, bool>>[] expressions);
-		void Create(T entity);
+		T Create(T entity);
         void Update(T entity);
         void Delete(T entity);
     }
