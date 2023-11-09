@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
 using WallpaperPortal.Infrastructure;
+using WallpaperPortal.Middlewares;
 using WallpaperPortal.Models;
 using WallpaperPortal.Persistance;
 using WallpaperPortal.Services;
@@ -61,6 +62,8 @@ app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseMiddleware<ErrorHandlerMiddleware>();
 
 app.MapControllerRoute(
     name: "default",

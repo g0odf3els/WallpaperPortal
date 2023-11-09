@@ -22,6 +22,14 @@ namespace WallpaperPortal.Middlewares
             {
                 var response = context.Response;
                 response.StatusCode = (int)HttpStatusCode.InternalServerError;
+
+                using (var writer = new StreamWriter("error.log", true))
+                {
+                    await writer.WriteLineAsync($"Time: {DateTime.Now}");
+                    await writer.WriteLineAsync($"Error: {ex.Message}");
+                    await writer.WriteLineAsync($"Stack: {ex.StackTrace}");
+                    await writer.WriteLineAsync();
+                }
             }
         }
     }
