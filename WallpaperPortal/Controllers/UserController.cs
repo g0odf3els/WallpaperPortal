@@ -128,7 +128,7 @@ namespace WallpaperPortal.Controllers
             return RedirectToAction("Index");
         }
 
-        public  IActionResult Profile(string id, int page = 1, int pageSize = 16)
+        public IActionResult Profile(string id, int page = 1, int pageSize = 16)
         {
             var user = _unitOfWork.UserRepository.FindFirstByCondition(u => u.Id == id);
 
@@ -137,7 +137,7 @@ namespace WallpaperPortal.Controllers
                 return NotFound();
             }
 
-            var pagedList = _unitOfWork.FileRepository.GetPaged(page, pageSize, new[] {"Tags" },  f => f.UserId == user.Id);
+            var pagedList = _unitOfWork.FileRepository.GetPaged(page, pageSize, new[] { "Tags" }, f => f.UserId == user.Id);
 
             return View(new ProfileViewModel()
             {
@@ -148,7 +148,7 @@ namespace WallpaperPortal.Controllers
 
         [Authorize]
         [HttpGet]
-        public  IActionResult ChangeProfileImage()
+        public IActionResult ChangeProfileImage()
         {
             var user = _unitOfWork.UserRepository.FindFirstByCondition(user => user.Id == User.FindFirstValue(ClaimTypes.NameIdentifier));
 
@@ -158,7 +158,6 @@ namespace WallpaperPortal.Controllers
             }
 
             return View(user);
-
         }
 
         [Authorize]
@@ -166,48 +165,40 @@ namespace WallpaperPortal.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult ChangeProfileImage(IFormFile upload)
         {
-            try
+
+            var user = _unitOfWork.UserRepository.FindFirstByCondition(user => user.Id == User.FindFirstValue(ClaimTypes.NameIdentifier));
+
+            if (user == null)
             {
-                var user = _unitOfWork.UserRepository.FindFirstByCondition(user => user.Id == User.FindFirstValue(ClaimTypes.NameIdentifier));
-
-                if (user == null)
-                {
-                    throw new Exception();
-                }
-
-                using (MagickImage image = new MagickImage(upload.OpenReadStream()))
-                {
-
-                    int targetWidth = 240;
-                    int targetHeight = 320;
-
-                    image.Resize(new MagickGeometry(targetWidth, targetHeight)
-                    {
-                        FillArea = true
-                    });
-
-                    image.Extent(targetWidth, targetHeight, Gravity.Center);
-
-                    image.Write($"wwwroot/Uploads/ProfileImages/{user.Id}{Path.GetExtension(upload.FileName)}");
-
-                    if (System.IO.File.Exists($"wwwroot/{user.ProfileImage}"))
-                    {
-                        System.IO.File.Delete($"wwwroot/{user.ProfileImage}");
-                    }
-
-                }
-
-                user.ProfileImage = $"/Uploads/ProfileImages/{user.Id}{Path.GetExtension(upload.FileName)}";
-
-                _unitOfWork.Save();
-                return RedirectToAction("Profile", "Users", new { id = user.Id });
+                throw new Exception();
             }
 
-            catch (Exception ex)
+            using (MagickImage image = new MagickImage(upload.OpenReadStream()))
             {
-                _logger.LogError(ex.Message);
-                return BadRequest();
+
+                int targetWidth = 240;
+                int targetHeight = 320;
+
+                image.Resize(new MagickGeometry(targetWidth, targetHeight)
+                {
+                    FillArea = true
+                });
+
+                image.Extent(targetWidth, targetHeight, Gravity.Center);
+
+                image.Write($"wwwroot/Uploads/ProfileImages/{user.Id}{Path.GetExtension(upload.FileName)}");
+
+                if (System.IO.File.Exists($"wwwroot/{user.ProfileImage}"))
+                {
+                    System.IO.File.Delete($"wwwroot/{user.ProfileImage}");
+                }
+
             }
+
+            user.ProfileImage = $"/Uploads/ProfileImages/{user.Id}{Path.GetExtension(upload.FileName)}";
+
+            _unitOfWork.Save();
+            return RedirectToAction("Profile", "Users", new { id = user.Id });
         }
     }
 }

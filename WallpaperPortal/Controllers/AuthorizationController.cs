@@ -36,43 +36,35 @@ namespace WallpaperPortal.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
-            try
+
+            if (!ModelState.IsValid)
             {
-                if (!ModelState.IsValid)
-                {
-                    return View(model);
-                }
-
-                var user = new User
-                {
-                    Email = model.Email,
-                    UserName = model.Username,
-                };
-
-                var result = await _userManager.CreateAsync(user, model.Password);
-
-                if (result.Succeeded)
-                {
-                    await _userManager.AddToRoleAsync(user, "user");
-
-                    await _signInManager.SignInAsync(user, false);
-
-                    return RedirectToAction("ConfirmEmail", "Authorization");
-                }
-
-                foreach (var error in result.Errors)
-                {
-                    ModelState.AddModelError(string.Empty, error.Description);
-                }
-
                 return View(model);
+            }
 
-            }
-            catch (Exception ex)
+            var user = new User
             {
-                _logger.LogError(ex.Message);
-                return BadRequest();
+                Email = model.Email,
+                UserName = model.Username,
+            };
+
+            var result = await _userManager.CreateAsync(user, model.Password);
+
+            if (result.Succeeded)
+            {
+                await _userManager.AddToRoleAsync(user, "user");
+
+                await _signInManager.SignInAsync(user, false);
+
+                return RedirectToAction("ConfirmEmail", "Authorization");
             }
+
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError(string.Empty, error.Description);
+            }
+
+            return View(model);
         }
 
         [HttpGet]
@@ -88,8 +80,7 @@ namespace WallpaperPortal.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginViewModel model)
         {
-            try
-            {
+
                 if (!ModelState.IsValid)
                 {
                     return View(model);
@@ -112,12 +103,7 @@ namespace WallpaperPortal.Controllers
                 ModelState.AddModelError("", "Incorrect login and/or password");
 
                 return View(model);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.Message);
-                return BadRequest();
-            }
+                return View(model);
         }
 
         [HttpGet]
