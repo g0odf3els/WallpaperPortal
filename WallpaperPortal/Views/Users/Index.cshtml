@@ -3,7 +3,7 @@
     ViewBag.Title = "Users";
 }
 
-<div class="container flex-column">
+<div class="container flex-column users">
 
     <div class="flex-row justify-content-center mt-10 mx-5">
         <form class="searchbar-form" asp-controller="Users" asp-action="Index" method="get">
@@ -12,7 +12,7 @@
         </form>
     </div>
 
-    <div class="mt-10 mx-5">
+    <div class="pt-5 px-10">
         <table class="table">
             <tr>
                 <th>Email</th>
@@ -52,7 +52,7 @@
         </table>
     </div>
 
-    <div class="mt-10 mx-5">
+    <div class="pt-5 px-10">
         <form asp-action="Create" method="get">
             <button type="submit" class="animated-btn">
                 Create

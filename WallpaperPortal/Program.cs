@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
 using WallpaperPortal.Infrastructure;
+using WallpaperPortal.Middlewares;
 using WallpaperPortal.Models;
 using WallpaperPortal.Persistance;
 using WallpaperPortal.Services;
@@ -36,6 +37,7 @@ builder.Services.ConfigureApplicationCookie(options =>
 });
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<IFileService, FileService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<ISitemapGenerator, SitemapGenerator>();
 
@@ -61,9 +63,11 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.UseMiddleware<ErrorHandlerMiddleware>();
+
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=File}/{action=Files}/{id?}");
 
 string filesFolderPath = Path.Combine(app.Environment.WebRootPath, "Uploads/Files");
 if (!Directory.Exists(filesFolderPath))
