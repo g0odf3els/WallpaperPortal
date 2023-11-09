@@ -617,7 +617,7 @@ body {
     }
 
     .image-box {
-        min-height: 60%;
+        min-height: 450px;
     }
 }
 
