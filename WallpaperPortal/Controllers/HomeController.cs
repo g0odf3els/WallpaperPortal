@@ -18,16 +18,6 @@ namespace WallpaperPortal.Controllers
             _sitemapGenerator = sitemapGenerator;
         }
 
-        public IActionResult Index()
-        {
-           return RedirectToAction("Files", "File");
-        }
-
-        public IActionResult Privacy()
-        {
-            return View();
-        }
-
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

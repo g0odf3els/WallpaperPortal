@@ -60,7 +60,7 @@ namespace WallpaperPortal.Repositories
             };
         }
 
-        public void Create(T entity) => _context.Set<T>().Add(entity);
+        public T Create(T entity) => _context.Set<T>().Add(entity).Entity;
 
         public void Update(T entity) => _context.Entry(entity).State = EntityState.Modified;
 
