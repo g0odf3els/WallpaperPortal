@@ -1,8 +1,11 @@
 ﻿@model WallpaperPortal.ViewModels.FileViewModel;
 
 @using System.Security.Claims;
+@using WallpaperPortal.Services;
 @{
     ViewData["Title"] = $"Download {string.Join(", ", Model.File.Tags.Select(t => t.Name))} wallpaper free";
+
+    var pallet = ColorUtils.GetColorPalette($"wwwroot/{Model.File.Path}", 5);
 }
 
 @section metatags {
@@ -16,6 +19,13 @@
     <div class="sidebar">
 
         @await Html.PartialAsync("_UserCard", Model.File.User)
+
+        <div class="color-palette">
+            @foreach (var color in pallet)
+            {
+                <div class="color-rectangle" style="background-color: rgba(@color.R, @color.G, @color.B, @color.A)"></div>
+            }
+        </div>
 
         <div class="file-info pt-5 px-10">
 
@@ -51,6 +61,7 @@
                 </div>
             </button>
         </form>
+
 
         @if (@Model.File.UserId == @User.FindFirstValue(ClaimTypes.NameIdentifier) || @User.IsInRole("Admin"))
         {
@@ -136,9 +147,9 @@
         function openFullscreen(element) {
             if (element.requestFullscreen) {
                 element.requestFullscreen();
-            } else if (element.mozRequestFullScreen) { 
+            } else if (element.mozRequestFullScreen) {
                 element.mozRequestFullScreen();
-            } else if (element.webkitRequestFullscreen) { 
+            } else if (element.webkitRequestFullscreen) {
                 element.webkitRequestFullscreen();
             } else if (element.msRequestFullscreen) {
                 element.msRequestFullscreen();

@@ -70,9 +70,9 @@ namespace Dreamscape.Controllers
         [Authorize]
         [HttpPost("Upload")]
         [ValidateAntiForgeryToken]
-        public IActionResult Upload(IFormFile upload, string tagsList)
+        public IActionResult Upload(IFormFile upload, string? tagsList = null)
         {
-            if (upload == null || string.IsNullOrEmpty(tagsList))
+            if (upload == null)
             {
                 return BadRequest();
             }
