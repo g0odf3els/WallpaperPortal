@@ -16,6 +16,6 @@
 
         public List<Tag> Tags { get; set; } = new List<Tag>();
 
-        public List<Color> Palette { get; set; } = new List<Color>();
+        public List<Color> Colors { get; set; } = new List<Color>();
     }
 }

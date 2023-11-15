@@ -135,7 +135,7 @@ namespace WallpaperPortal.Services
                     "Colors"
             });
 
-            if(file?.Palette.Count == 0)
+            if(file?.Colors.Count == 0)
             {
                 CreatePallet(file);
                 _unitOfWork.Save();
@@ -272,7 +272,7 @@ namespace WallpaperPortal.Services
                        B = color.B
                    });
 
-                file.Palette.Add(clr);
+                file.Colors.Add(clr);
             }
         }
     }

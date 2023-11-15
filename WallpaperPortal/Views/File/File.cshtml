@@ -19,7 +19,7 @@
         @await Html.PartialAsync("_UserCard", Model.File.User)
 
         <div class="color-palette">
-            @foreach (var color in Model.File.Palette)
+            @foreach (var color in Model.File.Colors)
             {
                 <div class="color-rectangle" style="background-color: rgba(@color.R, @color.G, @color.B, @color.A)"></div>
             }
