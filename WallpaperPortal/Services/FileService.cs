@@ -6,6 +6,7 @@ using WallpaperPortal.Persistance;
 using WallpaperPortal.Queries;
 using WallpaperPortal.Repositories;
 using WallpaperPortal.Services.Abstract;
+using Color = WallpaperPortal.Models.Color;
 
 namespace WallpaperPortal.Services
 {
@@ -125,14 +126,25 @@ namespace WallpaperPortal.Services
 
         public File? File(string id)
         {
-            return _unitOfWork.FileRepository.FindFirstByCondition(
-                file => file.Id == id,
-                new[]
-                {
+            var file = _unitOfWork.FileRepository.FindFirstByCondition(
+            file => file.Id == id,
+            new[]
+            {
                     "User",
-                    "Tags" }
-                );
+                    "Tags",
+                    "Colors"
+            });
+
+            if(file?.Palette.Count == 0)
+            {
+                CreatePallet(file);
+                _unitOfWork.Save();
+            }
+
+            return file;
         }
+
+
 
         public List<File> SimilarFiles(File file)
         {
@@ -176,6 +188,8 @@ namespace WallpaperPortal.Services
                 AddTagsToFile(file, tags);
             }
 
+            CreatePallet(file);
+         
             _unitOfWork.FileRepository.Create(file);
 
             _unitOfWork.Save();
@@ -243,6 +257,23 @@ namespace WallpaperPortal.Services
 
             _unitOfWork.FileRepository.Delete(file);
             _unitOfWork.Save();
+        }
+
+        public void CreatePallet(File file)
+        {
+            foreach (var color in ColorUtils.GetColorPalette($"wwwroot/{file.Path}", 5))
+            {
+                var clr = _unitOfWork.ColorRepository.FindById(color.A, color.R, color.G, color.B)
+                   ?? _unitOfWork.ColorRepository.Create(new Color()
+                   {
+                       A = color.A,
+                       R = color.R,
+                       G = color.G,
+                       B = color.B
+                   });
+
+                file.Palette.Add(clr);
+            }
         }
     }
 }

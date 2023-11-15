@@ -17,6 +17,11 @@ namespace WallpaperPortal.Repositories
 
         public IQueryable<T> FindAll() => _context.Set<T>().AsNoTracking();
 
+        public T? FindById(params object?[]? keyValues)
+        {
+            return _context.Set<T>().Find(keyValues);
+        }
+
         public T? FindFirstByCondition(Expression<Func<T, bool>> expression, string[]? include = null)
         {
             IQueryable<T> query = _context.Set<T>();

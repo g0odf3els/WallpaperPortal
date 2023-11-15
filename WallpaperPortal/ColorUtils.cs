@@ -28,6 +28,7 @@ namespace WallpaperPortal
             {
                 quantizer.AddColor(System.Drawing.Color.FromArgb(color.R, color.G, color.B));
             }
+
             return quantizer.GetPalette(5).ToList();
         }
     }
