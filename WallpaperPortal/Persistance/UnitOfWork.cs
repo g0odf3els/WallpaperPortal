@@ -1,5 +1,6 @@
 ﻿using WallpaperPortal.Models;
 using WallpaperPortal.Repositories;
+using Color = WallpaperPortal.Models.Color;
 
 namespace WallpaperPortal.Persistance
 {
@@ -9,6 +10,7 @@ namespace WallpaperPortal.Persistance
         private RepositoryBase<User> _userRepository;
         private RepositoryBase<File> _fileRepository;
         private RepositoryBase<Tag> _tageRepository;
+        private RepositoryBase<Color> _colorRepository;
 
 
         public UnitOfWork(ApplicationContext context)
@@ -57,6 +59,18 @@ namespace WallpaperPortal.Persistance
                     _tageRepository = new RepositoryBase<Tag>(_context);
                 }
                 return _tageRepository;
+            }
+        }
+
+        public RepositoryBase<Color> ColorRepository
+        {
+            get
+            {
+                if (_colorRepository == null)
+                {
+                    _colorRepository = new RepositoryBase<Color>(_context);
+                }
+                return _colorRepository;
             }
         }
 

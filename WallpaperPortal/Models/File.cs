@@ -15,5 +15,7 @@
         public User User { get; set; }
 
         public List<Tag> Tags { get; set; } = new List<Tag>();
+
+        public List<Color> Palette { get; set; } = new List<Color>();
     }
 }
