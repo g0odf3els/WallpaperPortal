@@ -9,9 +9,19 @@ namespace WallpaperPortal.Models
 
         public DbSet<Tag> Tags { get; set; }
 
+        public DbSet<Color> Colors { get; set; }
+
         public ApplicationContext(DbContextOptions<ApplicationContext> options) : base(options)
         {
-            Database.EnsureCreated();
+            Database.Migrate();
+        }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<Color>()
+                .HasKey(c => new { c.A, c.R, c.G, c.B });
         }
     }
 }
