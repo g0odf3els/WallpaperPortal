@@ -14,7 +14,7 @@
 
 <div class="file container flex-row">
 
-    <div class="sidebar">
+    <div class="sidebar file_left-sidebar">
 
         @await Html.PartialAsync("_UserCard", Model.File.User)
 
@@ -118,7 +118,7 @@
              alt="Download @string.Join(", ", Model.File.Tags.Select(t => t.Name)) @Model.File.Width x @Model.File.Height wallpaper for free">
     </div>
 
-    <div class="sidebar">
+    <div class="sidebar file_right-sidebar">
         @if (Model.SimilarFiles.Count() > 0)
         {
             <div class="similar-files">

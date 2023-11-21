@@ -512,6 +512,7 @@ body {
 
 /*----similar-files---*/
 .similar-files {
+    position: absolute;
     display: grid;
     grid-template-columns: repeat(1, 1fr);
 }
@@ -562,6 +563,13 @@ body {
 /*--------------------*/
 
 /*------file-----*/
+.file_left-sidebar {
+    flex-basis: 300px;
+}
+
+.file_right-sidebar {
+    flex-basis: 500px;
+}
 
 .image-box {
     width: 100%;
