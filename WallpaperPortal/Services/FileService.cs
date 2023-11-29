@@ -13,10 +13,12 @@ namespace WallpaperPortal.Services
     public class FileService : IFileService
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IModelPredictionService _modelPredictionService;
 
-        public FileService(IUnitOfWork unitOfWork)
+        public FileService(IUnitOfWork unitOfWork, IModelPredictionService modelPredictionService)
         {
             _unitOfWork = unitOfWork;
+            _modelPredictionService = modelPredictionService;
         }
 
         public PagedList<File> Files(FilesQuery query)
@@ -126,7 +128,7 @@ namespace WallpaperPortal.Services
 
         public File? File(string id)
         {
-            var file = _unitOfWork.FileRepository.FindFirstByCondition(
+            var file = _unitOfWork.FileRepository.FindFirst(
             file => file.Id == id,
             new[]
             {
@@ -135,7 +137,7 @@ namespace WallpaperPortal.Services
                     "Colors"
             });
 
-            if(file?.Colors.Count == 0)
+            if (file?.Colors.Count == 0)
             {
                 CreatePallet(file);
                 _unitOfWork.Save();
@@ -144,56 +146,79 @@ namespace WallpaperPortal.Services
             return file;
         }
 
-
-
         public List<File> SimilarFiles(File file)
         {
-            var similarFiles = _unitOfWork.FileRepository.FindAllByCondition(f => f.Tags.Any(tag => file.Tags.Contains(tag))).Take(8).ToList();
+            var similarFiles = _unitOfWork.FileRepository
+                .FindAll(f => f.Tags.Any(tag => file.Tags
+                .Contains(tag)))
+                .OrderByDescending(f => f.Tags.Count(tag => file.Tags.Contains(tag)))
+                .Take(8)
+                .ToList();
+
             similarFiles.RemoveAll(f => f.Id == file.Id);
 
             return similarFiles;
         }
 
-        public void Upload(IFormFile upload, string userId, string[]? tags)
+        public void Upload(IFormFile[] uploads, string userId, string[]? tags)
         {
-            var id = Guid.NewGuid().ToString();
 
-            var filePath = $"/Uploads/Files/{id}{Path.GetExtension(upload.FileName)}";
-
-            using (var stream = new FileStream($"wwwroot/{filePath}", FileMode.Create))
+            foreach (var upload in uploads)
             {
-                upload.CopyTo(stream);
+
+                var id = Guid.NewGuid().ToString();
+
+                var filePath = $"/Uploads/Files/{id}{Path.GetExtension(upload.FileName)}";
+
+                using (var stream = new FileStream($"wwwroot/{filePath}", FileMode.Create))
+                {
+                    upload.CopyTo(stream);
+                }
+
+                File file = new File()
+                {
+                    Id = id,
+                    Name = $"{id}{Path.GetExtension(upload.FileName)}",
+                    Lenght = upload.Length,
+                    Path = $"/Uploads/Files/{id}{Path.GetExtension(upload.FileName)}",
+                    CreationTime = DateTime.Now,
+                    UserId = userId
+                };
+
+                using (MagickImage image = new MagickImage($"wwwroot/{filePath}"))
+                {
+                    file.Height = image.Height;
+                    file.Width = image.Width;
+                }
+
+                CreatePreviewForFile(file);
+
+                var predictedTags = _modelPredictionService.PredictTags($"wwwroot/{file.PreviewPath}");
+                foreach (var prediction in predictedTags.Where(prediction => prediction.Confidence > -0.5))
+                {
+                    var tag = _unitOfWork.TagRepository.FindFirst(tag => tag.Name == prediction.Label.ToLower())
+                        ?? _unitOfWork.TagRepository.Create(new Tag()
+                        {
+                            Id = Guid.NewGuid().ToString(),
+                            Name = prediction.Label.ToLower()
+                        });
+
+                    file.Tags.Add(tag);
+                }
+                _unitOfWork.Save();
+
+                if (tags != null)
+                {
+                    AddTagsToFile(file, tags);
+                }
+
+                CreatePallet(file);
+
+                _unitOfWork.FileRepository.Create(file);
+
+                _unitOfWork.Save();
+
             }
-
-            File file = new File()
-            {
-                Id = id,
-                Name = $"{id}{Path.GetExtension(upload.FileName)}",
-                Lenght = upload.Length,
-                Path = $"/Uploads/Files/{id}{Path.GetExtension(upload.FileName)}",
-                CreationTime = DateTime.Now,
-                UserId = userId
-            };
-
-            using (MagickImage image = new MagickImage($"wwwroot/{filePath}"))
-            {
-                file.Height = image.Height;
-                file.Width = image.Width;
-            }
-
-            CreatePreviewForFile(file);
-
-            if (tags != null)
-            {
-                AddTagsToFile(file, tags);
-            }
-
-            CreatePallet(file);
-         
-            _unitOfWork.FileRepository.Create(file);
-
-            _unitOfWork.Save();
-
         }
 
         private void CreatePreviewForFile(File file)
@@ -225,7 +250,7 @@ namespace WallpaperPortal.Services
         {
             foreach (var tagName in tags)
             {
-                var tag = _unitOfWork.TagRepository.FindFirstByCondition(tag => tag.Name == tagName.ToLower())
+                var tag = _unitOfWork.TagRepository.FindFirst(tag => tag.Name == tagName.ToLower())
                     ?? _unitOfWork.TagRepository.Create(new Tag()
                     {
                         Id = Guid.NewGuid().ToString(),

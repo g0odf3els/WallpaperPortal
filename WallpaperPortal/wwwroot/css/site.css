@@ -359,6 +359,7 @@ body {
 
 /*------tag-list-------*/
 .tag-list {
+    position: absolute;
     display: flex;
     flex-wrap: wrap;
     list-style: none;
@@ -564,11 +565,11 @@ body {
 
 /*------file-----*/
 .file_left-sidebar {
-    flex-basis: 300px;
+    flex-basis: 400px;
 }
 
 .file_right-sidebar {
-    flex-basis: 500px;
+    flex-basis: 600px;
 }
 
 .image-box {

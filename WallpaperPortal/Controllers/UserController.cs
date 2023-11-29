@@ -32,7 +32,7 @@ namespace WallpaperPortal.Controllers
             }
             else
             {
-                return View(_unitOfWork.UserRepository.FindAllByCondition(user => user.UserName.Contains(username)));
+                return View(_unitOfWork.UserRepository.FindAll(user => user.UserName.Contains(username)));
             }
         }
 
@@ -130,7 +130,7 @@ namespace WallpaperPortal.Controllers
 
         public IActionResult Profile(string id, int page = 1, int pageSize = 16)
         {
-            var user = _unitOfWork.UserRepository.FindFirstByCondition(u => u.Id == id);
+            var user = _unitOfWork.UserRepository.FindFirst(u => u.Id == id);
 
             if (user is null)
             {
@@ -150,7 +150,7 @@ namespace WallpaperPortal.Controllers
         [HttpGet]
         public IActionResult ChangeProfileImage()
         {
-            var user = _unitOfWork.UserRepository.FindFirstByCondition(user => user.Id == User.FindFirstValue(ClaimTypes.NameIdentifier));
+            var user = _unitOfWork.UserRepository.FindFirst(user => user.Id == User.FindFirstValue(ClaimTypes.NameIdentifier));
 
             if (user is null)
             {
@@ -166,7 +166,7 @@ namespace WallpaperPortal.Controllers
         public IActionResult ChangeProfileImage(IFormFile upload)
         {
 
-            var user = _unitOfWork.UserRepository.FindFirstByCondition(user => user.Id == User.FindFirstValue(ClaimTypes.NameIdentifier));
+            var user = _unitOfWork.UserRepository.FindFirst(user => user.Id == User.FindFirstValue(ClaimTypes.NameIdentifier));
 
             if (user == null)
             {

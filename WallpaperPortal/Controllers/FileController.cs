@@ -52,7 +52,7 @@ namespace Dreamscape.Controllers
         [HttpGet("Upload")]
         public IActionResult Upload()
         {
-            var user = _unitOfWork.UserRepository.FindFirstByCondition(user => user.Id == User.FindFirstValue(ClaimTypes.NameIdentifier));
+            var user = _unitOfWork.UserRepository.FindFirst(user => user.Id == User.FindFirstValue(ClaimTypes.NameIdentifier));
 
             if (user == null)
             {
@@ -70,9 +70,9 @@ namespace Dreamscape.Controllers
         [Authorize]
         [HttpPost("Upload")]
         [ValidateAntiForgeryToken]
-        public IActionResult Upload(IFormFile upload, string? tagsList = null)
+        public IActionResult Upload(IFormFile[] uploads, string? tagsList = null)
         {
-            if (upload == null)
+            if (uploads == null)
             {
                 return BadRequest();
             }
@@ -84,7 +84,7 @@ namespace Dreamscape.Controllers
                 return BadRequest();
             }
 
-            _fileService.Upload(upload, userId, tagsList?.Split(','));
+            _fileService.Upload(uploads, userId, tagsList?.Split(','));
 
             return RedirectToAction("Files", "File");
         }
@@ -180,7 +180,7 @@ namespace Dreamscape.Controllers
                 return BadRequest();
             }
 
-            var file = _unitOfWork.FileRepository.FindFirstByCondition(file => file.Id == id);
+            var file = _unitOfWork.FileRepository.FindFirst(file => file.Id == id);
 
             return file == null ? NotFound() : View(file);
         }
