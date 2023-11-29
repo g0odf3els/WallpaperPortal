@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
+using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 using System.Linq.Expressions;
 using WallpaperPortal.Models;
 using WallpaperPortal.Repositories.Abstract;
@@ -8,21 +9,37 @@ namespace WallpaperPortal.Repositories
 {
     public class RepositoryBase<T> : IRepositoryBase<T> where T : class
     {
-        protected ApplicationContext _context { get; set; }
+        public ApplicationContext _context { get; set; }
 
         public RepositoryBase(ApplicationContext context)
         {
             _context = context;
         }
 
-        public IQueryable<T> FindAll() => _context.Set<T>().AsNoTracking();
+        public IQueryable<T> FindAll(Expression<Func<T, bool>>? expression = null, string[]? include = null)
+        {
+            IQueryable<T> query = _context.Set<T>();
+
+            if(expression != null)
+            {
+                query = query.Where(expression);
+            }
+
+            if (include != null)
+            {
+                query = include.Aggregate(query,
+                          (current, include) => current.Include(include));
+            }
+
+            return query;
+        }
 
         public T? FindById(params object?[]? keyValues)
         {
             return _context.Set<T>().Find(keyValues);
         }
 
-        public T? FindFirstByCondition(Expression<Func<T, bool>> expression, string[]? include = null)
+        public T? FindFirst(Expression<Func<T, bool>> expression, string[]? include = null)
         {
             IQueryable<T> query = _context.Set<T>();
 
@@ -34,9 +51,6 @@ namespace WallpaperPortal.Repositories
 
             return query.FirstOrDefault(expression);
         }
-
-        public IQueryable<T> FindAllByCondition(Expression<Func<T, bool>> expression) =>
-            _context.Set<T>().Where(expression).AsNoTracking();
 
         public PagedList<T> GetPaged(int pageNumber, int pageSize, string[]? include = null, params Expression<Func<T, bool>>[] expressions)
         {

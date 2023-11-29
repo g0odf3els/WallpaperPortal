@@ -15,7 +15,7 @@ namespace WallpaperPortal.Controllers
         [HttpGet]
         public ActionResult Tags(string prefix)
         {
-            var tags = _unitOfWork.TagRepository.FindAllByCondition(t => t.Name.StartsWith(prefix));
+            var tags = _unitOfWork.TagRepository.FindAll(t => t.Name.StartsWith(prefix));
             return Json(tags);
         }
     }

@@ -4,9 +4,8 @@ namespace WallpaperPortal.Repositories.Abstract
 {
     public interface IRepositoryBase<T>
     {
-        IQueryable<T> FindAll();
-        T? FindFirstByCondition(Expression<Func<T, bool>> expression, string[]? include = null);
-        IQueryable<T> FindAllByCondition(Expression<Func<T, bool>> expression);
+        IQueryable<T> FindAll(Expression<Func<T, bool>>? expression = null, string[]? include = null);
+        T? FindFirst(Expression<Func<T, bool>> expression, string[]? include = null);
         PagedList<T> GetPaged(int pageNumber, int pageSize, string[]? include = null, params Expression<Func<T, bool>>[] expressions);
 		T Create(T entity);
         void Update(T entity);

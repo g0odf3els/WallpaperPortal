@@ -115,7 +115,7 @@ namespace WallpaperPortal.Controllers
         public async Task<IActionResult> ConfirmEmail()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var user = _unitOfWork.UserRepository.FindFirstByCondition(user => user.Id == userId);
+            var user = _unitOfWork.UserRepository.FindFirst(user => user.Id == userId);
 
             if (user is null)
             {

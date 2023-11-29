@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.EntityFrameworkCore;
 using System;
 using WallpaperPortal.Infrastructure;
@@ -40,8 +41,18 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IFileService, FileService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<ISitemapGenerator, SitemapGenerator>();
+builder.Services.AddSingleton<IModelPredictionService, ModelPredictionService>();
 
 builder.Services.AddControllersWithViews();
+
+builder.Services.Configure<IISServerOptions>(options =>
+{
+    options.MaxRequestBodySize = null;
+});
+builder.Services.Configure<KestrelServerOptions>(options =>
+{
+    options.Limits.MaxRequestBodySize = null;
+});
 
 await RoleInitializer.CreateRoles(builder.Services.BuildServiceProvider(), builder.Configuration);
 
