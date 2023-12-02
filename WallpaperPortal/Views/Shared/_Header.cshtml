@@ -8,7 +8,7 @@
         <a class="nav__logo" asp-controller="File" asp-action="Files">Dreamscape</a>
 
         <form class="searchbar-form" asp-controller="File" asp-action="Files" method="get">
-            <input id="search" type="text" name="tag" placeholder="Search..." />
+            <input id="search" type="text" name="tags" placeholder="Search..." />
             <button style="border-color: white" class="animated-btn" type="submit">Search</button>
         </form>
 
@@ -114,7 +114,7 @@
             var urlParams = new URLSearchParams(window.location.search);
             var resolutionsParam = urlParams.get('resolutions');
             var aspectParam = urlParams.get('aspectRatios');
-            var tagParam = urlParams.get('tag');
+            var tagParam = urlParams.get('tags');
 
             if (resolutionsParam) {
                 var selectedResolutions = resolutionsParam.split(',');

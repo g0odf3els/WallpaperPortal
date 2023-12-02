@@ -1,4 +1,7 @@
 ﻿using ImageMagick;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Routing;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Text.RegularExpressions;
 using WallpaperPortal.Models;
@@ -25,9 +28,9 @@ namespace WallpaperPortal.Services
         {
             Expression<Func<File, bool>>[] expressions = new Expression<Func<File, bool>>[0];
 
-            if (!string.IsNullOrEmpty(query.Tag))
+            if (query.Tags != null && query.Tags.Length > 0)
             {
-                AppendTagFilterExpression(ref expressions, query.Tag);
+                AppendTagFilterExpression(ref expressions, query.Tags);
             }
 
             if (query.Resolutions != null)
@@ -40,12 +43,12 @@ namespace WallpaperPortal.Services
                 AppendAspectRatioFilterExpression(ref expressions, ParsePairs(query.AspectRatios));
             }
 
-            return _unitOfWork.FileRepository.GetPaged(query.Page, query.PageSize, new[] { "Tags" }, expressions);
+            return _unitOfWork.FileRepository.GetPaged(query.Page, query.PageSize, new[] { "Tags" }, f => f.Tags.Count(tag => query.Tags.Contains(tag.Name)), false, expressions);
         }
 
-        private static void AppendTagFilterExpression(ref Expression<Func<File, bool>>[] expressions, string tag)
+        private static void AppendTagFilterExpression(ref Expression<Func<File, bool>>[] expressions, string[] tags)
         {
-            expressions = expressions.Append(f => f.Tags.ToList().Any(t => t.Name == tag)).ToArray();
+            expressions = expressions.Append(f => f.Tags.Any(t => tags.Contains(t.Name))).ToArray();
         }
 
         private static void AppendResolutionFilterExpression(ref Expression<Func<File, bool>>[] expressions, List<(int, int)> resolutions)
@@ -134,7 +137,8 @@ namespace WallpaperPortal.Services
             {
                     "User",
                     "Tags",
-                    "Colors"
+                    "Colors",
+                    "LikedByUsers"
             });
 
             if (file?.Colors.Count == 0)
@@ -298,6 +302,65 @@ namespace WallpaperPortal.Services
                    });
 
                 file.Colors.Add(clr);
+            }
+        }
+
+        public void AddFileToFavorite(string userId, string fileId)
+        {
+            var user = _unitOfWork.UserRepository.FindFirst(f => f.Id == userId, new[] { "LikedTags" });
+            var file = _unitOfWork.FileRepository.FindFirst(f => f.Id == fileId, new[] { "LikedByUsers", "Tags" });
+
+            if (user != null && file != null)
+            {
+                if (!file.LikedByUsers.Any(ulf => ulf.UserId == userId))
+                {
+                    var userLikedFile = new UserLikedFile
+                    {
+                        UserId = userId,
+                        FileId = fileId
+                    };
+
+                    user.LikedFiles.Add(userLikedFile);
+
+                    foreach(Tag tag in file.Tags)
+                    {
+                        if(!user.LikedTags.Contains(tag))
+                        {
+                            user.LikedTags.Add(tag);
+                        }
+                    }
+
+                    _unitOfWork.UserRepository.Update(user);
+                    _unitOfWork.FileRepository.Update(file);
+
+                    _unitOfWork.Save();
+                }
+            }
+        }
+
+        public void RemoveFileFromFavorite(string userId, string fileId)
+        {
+            var user = _unitOfWork.UserRepository.FindById(new[] { userId });
+            var file = _unitOfWork.FileRepository.FindFirst(f => f.Id == fileId, new[] { "LikedByUsers" });
+
+            if (user != null && file != null)
+            {
+                if (file.LikedByUsers.Any(ulf => ulf.UserId == userId))
+                {
+                    var userLikedFile = new UserLikedFile
+                    {
+                        UserId = userId,
+                        FileId = fileId
+                    };
+
+                    user.LikedFiles.RemoveAll(f => f.FileId == user.Id);
+                    file.LikedByUsers.RemoveAll(f => f.UserId == user.Id);
+
+                    _unitOfWork.UserRepository.Update(user);
+                    _unitOfWork.FileRepository.Update(file);
+
+                    _unitOfWork.Save();
+                }
             }
         }
     }

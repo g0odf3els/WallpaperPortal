@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using WallpaperPortal.Models;
 using WallpaperPortal.Queries;
 using WallpaperPortal.Repositories;
 
@@ -13,5 +14,7 @@ namespace WallpaperPortal.Services.Abstract
         void Delete(File file);
         void AddTagsToFile(File file, string[] tags);
         void RemoveTagsFromFile(File file, string[] tags);
+        void AddFileToFavorite(string userId, string fileId);
+        void RemoveFileFromFavorite(string userId, string fileId);
     }
 }

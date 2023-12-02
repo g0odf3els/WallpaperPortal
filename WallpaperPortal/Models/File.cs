@@ -15,7 +15,7 @@
         public User User { get; set; }
 
         public List<Tag> Tags { get; set; } = new List<Tag>();
-
         public List<Color> Colors { get; set; } = new List<Color>();
+        public List<UserLikedFile> LikedByUsers { get; set; } = new List<UserLikedFile>();
     }
 }
