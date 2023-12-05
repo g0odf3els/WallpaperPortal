@@ -20,7 +20,7 @@ namespace WallpaperPortal.Repositories
         {
             IQueryable<T> query = _context.Set<T>();
 
-            if(expression != null)
+            if (expression != null)
             {
                 query = query.Where(expression);
             }
@@ -52,7 +52,13 @@ namespace WallpaperPortal.Repositories
             return query.FirstOrDefault(expression);
         }
 
-        public PagedList<T> GetPaged(int pageNumber, int pageSize, string[]? include = null, params Expression<Func<T, bool>>[] expressions)
+        public PagedList<T> GetPaged(
+            int pageNumber,
+            int pageSize,
+            string[]? include = null,
+            Expression<Func<T, object>>? orderBy = null,
+            bool isAscending = true,
+            params Expression<Func<T, bool>>[] expressions)
         {
             IQueryable<T> query = _context.Set<T>().AsNoTracking();
 
@@ -65,6 +71,13 @@ namespace WallpaperPortal.Repositories
             foreach (var expression in expressions)
             {
                 query = query.Where(expression);
+            }
+
+            if (orderBy != null)
+            {
+                query = isAscending
+                    ? query.OrderBy(orderBy)
+                    : query.OrderByDescending(orderBy);
             }
 
             var totalCount = query.Count();

@@ -27,6 +27,25 @@
             </form>
         }
 
+        <div class="file-info">
+
+            <div class="tag-list pt-5 px-10 pb-5">
+                @foreach (var tag in Model.User.LikedTags)
+                {
+                    <div class="flex-row">
+
+                        <a class="tag-list__link" asp-controller="File" asp-action="Files" asp-route-tags="@tag.Tag.Name">
+                            <span class="tag-list__tag">
+                                @tag.Tag.Name
+                            </span>
+                        </a>
+
+                    </div>
+                }
+            </div>
+
+        </div>
+
     </div>
 
     <div class="container">
@@ -41,12 +60,6 @@
         {
             <div class="px-10 pt-5">
                 <h3>The @Model.User.UserName has not uploaded any files yet</h3>
-            </div>
-        }
-        @if (Model.User.Id == @User.FindFirstValue(ClaimTypes.NameIdentifier) && !Model.User.EmailConfirmed)
-        {
-            <div class="px-10 pt-5">
-                Check your email and follow the links in the email to complete your registration and be able to upload files.
             </div>
         }
     </div>

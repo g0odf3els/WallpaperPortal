@@ -7,7 +7,7 @@ namespace WallpaperPortal.Queries
 		public int Page { get; set; } = 1;
 		public int PageSize { get; set; } = 16;
 
-		public string? Tag { get; set; }
+		public string[]? Tags { get; set; } = new string[] { };
 
 		public string? Width { get; set; }
 		public string? Height { get; set; }

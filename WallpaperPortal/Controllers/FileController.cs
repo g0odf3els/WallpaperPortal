@@ -5,6 +5,11 @@ using System.Security.Claims;
 using WallpaperPortal.Persistance;
 using WallpaperPortal.Queries;
 using WallpaperPortal.Services.Abstract;
+using Microsoft.AspNetCore.Identity;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using WallpaperPortal.Repositories;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using WallpaperPortal.Models;
 
 namespace Dreamscape.Controllers
 {
@@ -32,21 +37,45 @@ namespace Dreamscape.Controllers
             });
         }
 
+        [Authorize]
+        public IActionResult Relevant([FromQuery] FilesQuery query)
+        {
+            var user = _unitOfWork.UserRepository.FindFirst(user => user.Id == User.FindFirstValue(ClaimTypes.NameIdentifier), new[] { "LikedTags.User", "LikedTags.Tag" });
+            query.Tags = user.LikedTags.Select(t => t.Tag.Name).ToArray();
+            return View("Files", new FilesViewModel()
+            {
+                PagedList = _fileService.Files(query),
+                FilesQuery = query
+            });
+        }
+
+        public IActionResult Favorite([FromQuery] FilesQuery query, string id)
+        {
+            var user = _unitOfWork.UserRepository.FindFirst(user => user.Id == id, new[] { "LikedTags.User", "LikedTags.Tag" });
+
+            return View("../Users/Profile", new ProfileViewModel()
+            {
+                User = user,
+                UploadedFiles = _fileService.Favorite(query, id),
+            });
+        }
+
         [HttpGet("File")]
         public IActionResult File(string id)
         {
             var file = _fileService.File(id);
+            var user = _unitOfWork.UserRepository.FindFirst(user => user.Id == User.FindFirstValue(ClaimTypes.NameIdentifier));
 
             return file == null
                 ? NotFound()
                 : View(new FileViewModel()
                 {
                     File = file,
-                    SimilarFiles = _fileService.SimilarFiles(file)
+                    SimilarFiles = _fileService.SimilarFiles(file),
+                    isFavorite = user != null && file.LikedByUsers.Any(f => f.UserId == User.FindFirstValue(ClaimTypes.NameIdentifier))
                 });
 
         }
-
 
         [Authorize]
         [HttpGet("Upload")]
@@ -94,7 +123,6 @@ namespace Dreamscape.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Delete(string id)
         {
-
             var file = _fileService.File(id);
 
             if (file == null)
@@ -120,6 +148,7 @@ namespace Dreamscape.Controllers
             return file == null ? NotFound() : File(file.Path, "text/plain", file.Name);
         }
 
+        [Authorize]
         [HttpPost("AddTag")]
         public IActionResult AddTag(string id, string tagName)
         {
@@ -146,8 +175,9 @@ namespace Dreamscape.Controllers
             return RedirectToAction("File", "File", new { id });
         }
 
+        [Authorize]
         [HttpPost("RemoveTag")]
-        public async Task<IActionResult> RemoveTag(string id, string tagName)
+        public IActionResult RemoveTag(string id, string tagName)
         {
 
             if (string.IsNullOrEmpty(id) || string.IsNullOrEmpty(tagName))
@@ -183,6 +213,20 @@ namespace Dreamscape.Controllers
             var file = _unitOfWork.FileRepository.FindFirst(file => file.Id == id);
 
             return file == null ? NotFound() : View(file);
+        }
+
+        [Authorize]
+        public IActionResult AddFileToFavorites(string id)
+        {
+            _fileService.AddFileToFavorite(User.FindFirstValue(ClaimTypes.NameIdentifier), id);
+            return RedirectToAction("File", "File", new { id });
+        }
+
+        [Authorize]
+        public IActionResult RemoveFileToFavorites(string id)
+        {
+            _fileService.RemoveFileFromFavorite(User.FindFirstValue(ClaimTypes.NameIdentifier), id);
+            return RedirectToAction("File", "File", new { id });
         }
     }
 }

@@ -106,6 +106,16 @@ body {
 }
 /*--------------------*/
 
+.select {
+    white-space: nowrap;
+    padding: 12px 16px;
+    background-color: black;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+
 /*----animated-btn----*/
 .animated-btn {
     background: #000;

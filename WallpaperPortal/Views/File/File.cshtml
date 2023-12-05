@@ -42,6 +42,29 @@
 
         </div>
 
+        @if (!Model.isFavorite)
+        {
+            <form class="pt-5 px-10" method="post" asp-action="AddFileToFavorites" asp-controller="File" asp-route-id="@Model.File.Id" enctype="multipart/form-data">
+                <button class="animated-btn" type="submit">
+                    <div class="flex-row justify-content-space-between align-items-center">
+                        <span>Add to favorites</span>
+                        <span class="material-symbols-outlined">bookmark</span>
+                    </div>
+                </button>
+            </form>
+        }
+        else
+        {
+            <form class="pt-5 px-10" method="post" asp-action="RemoveFileToFavorites" asp-controller="File" asp-route-id="@Model.File.Id" enctype="multipart/form-data">
+                <button class="animated-btn" type="submit">
+                    <div class="flex-row justify-content-space-between align-items-center">
+                        <span>Remove from favorites</span>
+                        <span class="material-symbols-outlined">bookmark_added</span>
+                    </div>
+                </button>
+            </form>
+        }
+
         <form class="pt-5 px-10" method="post" asp-action="Download" asp-controller="File" asp-route-id="@Model.File.Id" enctype="multipart/form-data">
             <button class="animated-btn" type="submit">
                 <div class="flex-row justify-content-space-between align-items-center">
@@ -59,7 +82,6 @@
                 </div>
             </button>
         </form>
-
 
         @if (@Model.File.UserId == @User.FindFirstValue(ClaimTypes.NameIdentifier) || @User.IsInRole("Admin"))
         {
@@ -90,7 +112,7 @@
             {
                 <div class="flex-row">
 
-                    <a class="tag-list__link" asp-controller="File" asp-action="Files" asp-route-tag="@tag.Name">
+                    <a class="tag-list__link" asp-controller="File" asp-action="Files" asp-route-tags="@tag.Name">
                         <span class="tag-list__tag">
                             @tag.Name
                         </span>
