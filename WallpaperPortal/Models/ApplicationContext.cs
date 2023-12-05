@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace WallpaperPortal.Models
 {
@@ -14,6 +15,12 @@ namespace WallpaperPortal.Models
         public ApplicationContext(DbContextOptions<ApplicationContext> options) : base(options)
         {
             Database.EnsureCreated();
+        }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder
+                .ConfigureWarnings(warnings => warnings.Ignore(CoreEventId.NavigationBaseIncludeIgnored));
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -35,6 +42,20 @@ namespace WallpaperPortal.Models
                 .HasOne(ulf => ulf.File)
                 .WithMany(f => f.LikedByUsers)
                 .HasForeignKey(ulf => ulf.FileId);
+
+            modelBuilder.Entity<UserLikedTag>()
+                .HasKey(ulf => new { ulf.UserId, ulf.TagId });
+
+            modelBuilder.Entity<UserLikedTag>()
+                .HasOne(ulf => ulf.User)
+                .WithMany(u => u.LikedTags)
+                .HasForeignKey(ulf => ulf.UserId);
+
+            modelBuilder.Entity<UserLikedTag>()
+                .HasOne(ulf => ulf.Tag)
+                .WithMany(f => f.UserLikedTag)
+                .HasForeignKey(ulf => ulf.TagId);
+
         }
     }
 }

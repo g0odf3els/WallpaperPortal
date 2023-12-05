@@ -6,5 +6,6 @@
         public string Name { get; set; }
 
         public List<File> Files { get; set; }
+        public List<UserLikedTag> UserLikedTag { get; set;}
     }
 }

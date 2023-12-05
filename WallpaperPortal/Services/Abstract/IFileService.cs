@@ -8,6 +8,7 @@ namespace WallpaperPortal.Services.Abstract
     public interface IFileService
     {
         PagedList<File> Files(FilesQuery query);
+        PagedList<File> Favorite(FilesQuery query, string id);
         File? File(string id);
         List<File> SimilarFiles(File file);
         void Upload(IFormFile[] uploads, string userId, string[] tags);

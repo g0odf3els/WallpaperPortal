@@ -6,6 +6,10 @@ using WallpaperPortal.Persistance;
 using WallpaperPortal.Queries;
 using WallpaperPortal.Services.Abstract;
 using Microsoft.AspNetCore.Identity;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using WallpaperPortal.Repositories;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using WallpaperPortal.Models;
 
 namespace Dreamscape.Controllers
 {
@@ -36,13 +40,23 @@ namespace Dreamscape.Controllers
         [Authorize]
         public IActionResult Relevant([FromQuery] FilesQuery query)
         {
-            var user = _unitOfWork.UserRepository.FindFirst(user => user.Id == User.FindFirstValue(ClaimTypes.NameIdentifier), new[] {"LikedTags"} );
-            query.Tags = user.LikedTags.Select(t => t.Name).ToArray();
-
+            var user = _unitOfWork.UserRepository.FindFirst(user => user.Id == User.FindFirstValue(ClaimTypes.NameIdentifier), new[] { "LikedTags.User", "LikedTags.Tag" });
+            query.Tags = user.LikedTags.Select(t => t.Tag.Name).ToArray();
             return View("Files", new FilesViewModel()
             {
-                PagedList = _fileService.Files(query ),
+                PagedList = _fileService.Files(query),
                 FilesQuery = query
+            });
+        }
+
+        public IActionResult Favorite([FromQuery] FilesQuery query, string id)
+        {
+            var user = _unitOfWork.UserRepository.FindFirst(user => user.Id == id, new[] { "LikedTags.User", "LikedTags.Tag" });
+
+            return View("../Users/Profile", new ProfileViewModel()
+            {
+                User = user,
+                UploadedFiles = _fileService.Favorite(query, id),
             });
         }
 
@@ -62,7 +76,6 @@ namespace Dreamscape.Controllers
                 });
 
         }
-
 
         [Authorize]
         [HttpGet("Upload")]
@@ -110,7 +123,6 @@ namespace Dreamscape.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Delete(string id)
         {
-
             var file = _fileService.File(id);
 
             if (file == null)

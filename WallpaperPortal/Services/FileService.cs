@@ -46,6 +46,40 @@ namespace WallpaperPortal.Services
             return _unitOfWork.FileRepository.GetPaged(query.Page, query.PageSize, new[] { "Tags" }, f => f.Tags.Count(tag => query.Tags.Contains(tag.Name)), false, expressions);
         }
 
+
+
+        public PagedList<File> Favorite(FilesQuery query, string id)
+        {
+            Expression<Func<File, bool>>[] expressions = new Expression<Func<File, bool>>[0];
+
+            if (!string.IsNullOrEmpty(id))
+            {
+                AppendUserLikedFilterExpression(ref expressions, id);
+            }
+
+            if (query.Tags != null && query.Tags.Length > 0)
+            {
+                AppendTagFilterExpression(ref expressions, query.Tags);
+            }
+
+            if (query.Resolutions != null)
+            {
+                AppendResolutionFilterExpression(ref expressions, ParsePairs(query.Resolutions));
+            }
+
+            if (query.AspectRatios != null)
+            {
+                AppendAspectRatioFilterExpression(ref expressions, ParsePairs(query.AspectRatios));
+            }
+
+            return _unitOfWork.FileRepository.GetPaged(query.Page, query.PageSize, new[] { "Tags" }, f => f.Tags.All(tag => query.Tags.Contains(tag.Name)), false, expressions);
+        }
+
+        private static void AppendUserLikedFilterExpression(ref Expression<Func<File, bool>>[] expressions, string userId)
+        {
+            expressions = expressions.Append(f => f.LikedByUsers.Any(l => l.UserId == userId)).ToArray();
+        }
+
         private static void AppendTagFilterExpression(ref Expression<Func<File, bool>>[] expressions, string[] tags)
         {
             expressions = expressions.Append(f => f.Tags.Any(t => tags.Contains(t.Name))).ToArray();
@@ -169,59 +203,64 @@ namespace WallpaperPortal.Services
 
             foreach (var upload in uploads)
             {
-
-                var id = Guid.NewGuid().ToString();
-
-                var filePath = $"/Uploads/Files/{id}{Path.GetExtension(upload.FileName)}";
-
-                using (var stream = new FileStream($"wwwroot/{filePath}", FileMode.Create))
+                try
                 {
-                    upload.CopyTo(stream);
+                    var id = Guid.NewGuid().ToString();
+
+                    var filePath = $"/Uploads/Files/{id}{Path.GetExtension(upload.FileName)}";
+
+                    using (var stream = new FileStream($"wwwroot/{filePath}", FileMode.Create))
+                    {
+                        upload.CopyTo(stream);
+                    }
+
+                    File file = new File()
+                    {
+                        Id = id,
+                        Name = $"{id}{Path.GetExtension(upload.FileName)}",
+                        Lenght = upload.Length,
+                        Path = $"/Uploads/Files/{id}{Path.GetExtension(upload.FileName)}",
+                        CreationTime = DateTime.Now,
+                        UserId = userId
+                    };
+
+                    using (MagickImage image = new MagickImage($"wwwroot/{filePath}"))
+                    {
+                        file.Height = image.Height;
+                        file.Width = image.Width;
+                    }
+
+                    CreatePreviewForFile(file);
+
+                    var predictedTags = _modelPredictionService.PredictTags($"wwwroot/{file.PreviewPath}");
+                    foreach (var prediction in predictedTags.Where(prediction => prediction.Confidence > -0.5))
+                    {
+                        var tag = _unitOfWork.TagRepository.FindFirst(tag => tag.Name == prediction.Label.ToLower())
+                            ?? _unitOfWork.TagRepository.Create(new Tag()
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                Name = prediction.Label.ToLower()
+                            });
+
+                        file.Tags.Add(tag);
+                    }
+                    _unitOfWork.Save();
+
+                    if (tags != null)
+                    {
+                        AddTagsToFile(file, tags);
+                    }
+
+                    CreatePallet(file);
+
+                    _unitOfWork.FileRepository.Create(file);
+
+                    _unitOfWork.Save();
                 }
-
-                File file = new File()
+                catch (Exception ex)
                 {
-                    Id = id,
-                    Name = $"{id}{Path.GetExtension(upload.FileName)}",
-                    Lenght = upload.Length,
-                    Path = $"/Uploads/Files/{id}{Path.GetExtension(upload.FileName)}",
-                    CreationTime = DateTime.Now,
-                    UserId = userId
-                };
 
-                using (MagickImage image = new MagickImage($"wwwroot/{filePath}"))
-                {
-                    file.Height = image.Height;
-                    file.Width = image.Width;
                 }
-
-                CreatePreviewForFile(file);
-
-                var predictedTags = _modelPredictionService.PredictTags($"wwwroot/{file.PreviewPath}");
-                foreach (var prediction in predictedTags.Where(prediction => prediction.Confidence > -0.5))
-                {
-                    var tag = _unitOfWork.TagRepository.FindFirst(tag => tag.Name == prediction.Label.ToLower())
-                        ?? _unitOfWork.TagRepository.Create(new Tag()
-                        {
-                            Id = Guid.NewGuid().ToString(),
-                            Name = prediction.Label.ToLower()
-                        });
-
-                    file.Tags.Add(tag);
-                }
-                _unitOfWork.Save();
-
-                if (tags != null)
-                {
-                    AddTagsToFile(file, tags);
-                }
-
-                CreatePallet(file);
-
-                _unitOfWork.FileRepository.Create(file);
-
-                _unitOfWork.Save();
-
             }
         }
 
@@ -322,11 +361,22 @@ namespace WallpaperPortal.Services
 
                     user.LikedFiles.Add(userLikedFile);
 
-                    foreach(Tag tag in file.Tags)
+                    foreach (Tag tag in file.Tags)
                     {
-                        if(!user.LikedTags.Contains(tag))
+                        var userLikedTag = user.LikedTags.FirstOrDefault(t => t.TagId == tag.Id);
+
+                        if (userLikedTag == null)
                         {
-                            user.LikedTags.Add(tag);
+                            user.LikedTags.Add(new UserLikedTag
+                            {
+                                UserId = user.Id,
+                                TagId = tag.Id
+                            });
+                        }
+                        else
+                        {
+                            userLikedTag.Weight++;
+                            _unitOfWork.TagRepository.Update(tag);
                         }
                     }
 
@@ -340,28 +390,33 @@ namespace WallpaperPortal.Services
 
         public void RemoveFileFromFavorite(string userId, string fileId)
         {
-            var user = _unitOfWork.UserRepository.FindById(new[] { userId });
-            var file = _unitOfWork.FileRepository.FindFirst(f => f.Id == fileId, new[] { "LikedByUsers" });
+            var user = _unitOfWork.UserRepository.FindFirst(f => f.Id == userId, new[] { "LikedTags", "LikedFiles" });
+            var file = _unitOfWork.FileRepository.FindFirst(f => f.Id == fileId, new[] { "LikedByUsers", "Tags" });
 
-            if (user != null && file != null)
+            if (user == null || file == null)
             {
-                if (file.LikedByUsers.Any(ulf => ulf.UserId == userId))
-                {
-                    var userLikedFile = new UserLikedFile
-                    {
-                        UserId = userId,
-                        FileId = fileId
-                    };
-
-                    user.LikedFiles.RemoveAll(f => f.FileId == user.Id);
-                    file.LikedByUsers.RemoveAll(f => f.UserId == user.Id);
-
-                    _unitOfWork.UserRepository.Update(user);
-                    _unitOfWork.FileRepository.Update(file);
-
-                    _unitOfWork.Save();
-                }
+                return;
             }
+
+            var ulf = file.LikedByUsers.Find(ulf => ulf.UserId == userId);
+
+            if (ulf == null)
+            {
+                return;
+            }
+
+            foreach (var tag in ulf.File.Tags)
+            {
+                user.LikedTags.RemoveAll(t => t.TagId == tag.Id);
+            }
+
+            user.LikedFiles.Remove(ulf);
+            file.LikedByUsers.Remove(ulf);
+
+            _unitOfWork.UserRepository.Update(user);
+            _unitOfWork.FileRepository.Update(file);
+
+            _unitOfWork.Save();
         }
     }
 }
